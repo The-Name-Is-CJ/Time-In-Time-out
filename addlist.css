@@ -1,0 +1,109 @@
+/* Reset */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Side Navigation */
+.sidenav {
+    height: 100%;
+    width: 220px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #111;
+    padding-top: 20px;
+}
+.sidenav p {
+    font-size: 30px;
+    font-weight: bold;
+    color: #fff;
+    text-align: center;
+    padding: 20px 10px;
+
+    margin: 0;
+    letter-spacing: 1px;
+    word-break: break-word;
+}
+.sidenav a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 12px 20px;
+    text-decoration: none;
+    font-size: 16px;
+    color: #ccc;
+
+    transition: all 0.25s ease; /* smoother overall */
+}
+
+.sidenav a i {
+    font-size: 18px;
+    transition: transform 0.25s ease;
+}
+
+/* 🔥 Hover = pop out */
+.sidenav a:hover {
+    background-color: #575757;
+    color: white;
+
+    transform: scale(1.05); /* POP effect */
+    padding-left: 26px;
+
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.sidenav a:hover i {
+    transform: scale(1.2);
+}
+
+.sidenav a.active {
+    background-color: white;
+    color: black;
+
+    font-weight: bold; 
+}
+
+/* keep icon black when active */
+.sidenav a.active i {
+    color: black;
+}
+/* Logo */
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px;
+}
+
+.logo i {
+    font-size: 26px;
+    color: white;
+}
+
+.logo p {
+    font-size: 18px;
+    color: white;
+    margin: 0;
+}
+
+.main {
+    margin-left: 220px;
+    padding: 20px;
+
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
