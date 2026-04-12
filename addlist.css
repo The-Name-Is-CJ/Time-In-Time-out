@@ -107,3 +107,159 @@ body {
         transform: translateY(0);
     }
 }
+.date-group {
+    display: flex;
+    gap: 75px;
+}
+
+.date-group div {
+    flex: 1;
+}
+.form-container, .list-container {
+    background: #f5f5f5;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+.form-container input {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 8px;
+}
+
+.form-container button {
+    padding: 10px;
+    width: 100%;
+    background: black;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.form-container button:hover {
+    background: #333;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table th, table td {
+    border-bottom: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+}
+
+.radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.radio-group label {
+    background: #ddd;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* =========================
+   TRACK TIME TABLE ONLY
+========================= */
+
+.track-table {
+    width: 100%;width: 100%;
+    table-layout: fixed;border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* Header */
+.track-table th {
+    background: #111;
+    color: white;
+    padding: 14px;
+    text-align: left;
+    font-size: 14px;
+}
+
+/* Cells */
+.track-table td {
+    border-bottom: 1px solid #eee;
+    padding: 12px;
+    vertical-align: top;
+    font-size: 13px;
+}
+
+/* Session container (Morning / Break / Lunch blocks) */
+.track-table td div {
+    background: #f5f5f5;
+    padding: 8px;
+    margin: 0 auto 8px auto; /* centers the block */
+    border-radius: 8px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* centers content inside */
+}
+.track-table td:nth-child(3),
+.track-table td:nth-child(4),
+.track-table td:nth-child(5) {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.track-table th:nth-child(3),
+.track-table th:nth-child(4),
+.track-table th:nth-child(5) {
+    text-align: center;
+}
+
+.track-table th:nth-child(1),
+.track-table td:nth-child(1) {
+    width: 30%;
+}
+
+.track-table th:nth-child(2),
+.track-table td:nth-child(2) {
+    width: 10%;
+}
+
+.track-table th:nth-child(3),
+.track-table td:nth-child(3),
+.track-table th:nth-child(4),
+.track-table td:nth-child(4),
+.track-table th:nth-child(5),
+.track-table td:nth-child(5) {
+    width: 10%;
+}
+
+.track-table button {
+    display: block;
+    margin-top: 5px;
+    padding: 6px 10px;
+    font-size: 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background: black;
+    color: white;
+    width: 100%;
+}
+
+/* Disabled buttons */
+.track-table button:disabled {
+    background: #aaa;
+    cursor: not-allowed;
+}
+
+/* Hover effect */
+.track-table button:hover:not(:disabled) {
+    background: #333;
+}

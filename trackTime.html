@@ -29,10 +29,34 @@
     </div>
 
     <div class="main">
-        <h2>Track Time Page</h2>
-        <p>Empty for now</p>
-    </div>
+        <h2>TIME IN/TIME OUT</h2>
 
-    <script src="js/script.js"></script>
+        <div class="form-container">
+            <h3>Select Date</h3>
+
+            <input type="date" id="selectedDate">
+            <button onclick="loadSchedule()">Show Schedule</button>
+        </div>
+
+        <!-- 📋 DISPLAY LIST -->
+        <div class="list-container">
+            <h3>Scheduled Students</h3>
+
+            <table class="track-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Section</th>
+                        <th>MORNING (AM)</th>
+                        <th>AFTER BREAK (AM)</th>
+                        <th>AFTER LUNCH (PM)</th>
+                    </tr>
+                </thead>
+                <tbody id="scheduleTable"></tbody>
+            </table>
+        </div>
+
+    </div>
+    <script src="trackTime.js"></script>
 </body>
 </html>
