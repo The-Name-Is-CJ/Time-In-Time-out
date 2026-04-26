@@ -3,8 +3,7 @@ body {
     font-family: 'Segoe UI', Arial, sans-serif;
     background-color: #fcfcfc;  
 }
-
-/* Side Navigation */
+ 
 .sidenav {
     height: 100%;
     width: 220px;
@@ -35,15 +34,14 @@ body {
     font-size: 16px;
     color: #ccc;
 
-    transition: all 0.25s ease; /* smoother overall */
+    transition: all 0.25s ease; 
 }
 
 .sidenav a i {
     font-size: 18px;
     transition: transform 0.25s ease;
 }
-
-/* 🔥 Hover = pop out */
+ 
 .sidenav a:hover {
     background-color: #ffd1dc; 
     color: #4a4a4a; 
@@ -66,8 +64,8 @@ body {
  
 .sidenav a.active i {
     color: black;
-}
-/* Logo */
+} 
+
 .logo {
     display: flex;
     align-items: center;
@@ -118,7 +116,7 @@ body {
 }
 
 .control-group input[type="date"] {
-    height: 40px; /* Matches height of your buttons */
+    height: 40px;  
     padding: 0 10px;
     border: 1px solid #ddd;
     border-radius: 6px;
@@ -150,10 +148,10 @@ body {
 }
 
 .export-header h3 {
-    margin: 0; /* Remove default margin to align better with button */
+    margin: 0; 
 } 
 .btn-excel-small {
-    background-color: #219150; /* Excel Green */
+    background-color: #219150;  
     color: white;
     border: none;
     padding: 6px 12px;
@@ -176,8 +174,7 @@ body {
     box-shadow: 0 3px 8px rgba(0,0,0,0.15);
     filter: brightness(1.1);
 }
-
-/* Ensure the table doesn't cramp the header */
+ 
 .report-section {
     margin-bottom: 50px;
 }
@@ -185,7 +182,7 @@ body {
     background: #4a4a4a;
     color: white;
     border: none;
-    height: 40px; /* Unified height */
+    height: 40px; 
     padding: 0 15px;
     border-radius: 6px;
     cursor: pointer;
@@ -197,7 +194,7 @@ body {
     background-color: #ffd1dc;
     color: #4a4a4a;
 }
-/* --- Table Design (Inherited from Track Time) --- */
+ 
 .report-table {
     width: 100%; 
     table-layout: fixed; 
@@ -206,10 +203,9 @@ body {
     border: 1px solid #ddd;
     margin-top: 10px;
     border-radius: 12px;
-    overflow: hidden; /* Ensures rounded corners show */
+    overflow: hidden;  
 }
-
-/* Header Styling */
+ 
 .report-table th {
     background-color: #f4f4f4; 
     color: #4a4a4a;
@@ -220,10 +216,9 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.5px;
     border: 1px solid #ddd; 
-    border-bottom: 2px solid #ffd1dc; /* The signature pink accent */
+    border-bottom: 2px solid #ffd1dc;  
 }
-
-/* Cell Styling */
+ 
 .report-table td {
     border: 1px solid #ddd;
     padding: 15px;
@@ -232,8 +227,7 @@ body {
     color: #666;
     word-wrap: break-word;
 }
-
-/* Row Hover & Striping */
+ 
 .report-table tbody tr:nth-child(even) {
     background-color: #fafafa;
 }
@@ -250,8 +244,7 @@ body {
 #completedTable th { border-bottom: 2px solid #27ae60; }
 #incompleteTable th { border-bottom: 2px solid #f39c12; }
 #absentTable th { border-bottom: 2px solid #e74c3c; }
-
-/* Status tags for better reading */
+ 
 .report-table td span {
     font-size: 11px;
     text-transform: uppercase;
