@@ -1,0 +1,166 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #fcfcfc;  
+}
+
+/* Side Navigation */
+.sidenav {
+    height: 100%;
+    width: 220px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #4a4a4a;  
+    padding-top: 20px;
+}
+.sidenav p {
+    font-size: 30px;
+    font-weight: bold;
+    color: #ffd1dc;
+    text-align: center;
+    padding: 20px 10px;
+
+    margin: 0;
+    letter-spacing: 1px;
+    word-break: break-word;
+}
+.sidenav a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 12px 20px;
+    text-decoration: none;
+    font-size: 16px;
+    color: #ccc;
+
+    transition: all 0.25s ease; /* smoother overall */
+}
+
+.sidenav a i {
+    font-size: 18px;
+    transition: transform 0.25s ease;
+}
+
+/* 🔥 Hover = pop out */
+.sidenav a:hover {
+    background-color: #ffd1dc; 
+    color: #4a4a4a; 
+    transform: scale(1.05); 
+    padding-left: 26px;
+
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.sidenav a:hover i {
+    transform: scale(1.2);
+}
+
+.sidenav a.active {
+    background-color: #ffd1dc;
+    color: #4a4a4a;
+    font-weight: bold; 
+}
+ 
+.sidenav a.active i {
+    color: black;
+}
+/* Logo */
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px;
+}
+
+.logo i {
+    font-size: 26px;
+    color: white;
+}
+
+.logo p {
+    font-size: 18px;
+    color: white;
+    margin: 0;
+}
+
+.main {
+    margin-left: 220px;
+    padding: 20px;
+    color: #4a4a4a;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.report-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f1f1f1;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.report-section {
+    margin-bottom: 40px;
+}
+
+.report-section h3 {
+    border-left: 5px solid #ffd1dc;
+    padding-left: 10px;
+    color: #4a4a4a;
+}
+
+.btn-excel {
+    background-color: #27ae60; /* Excel Green */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-excel:hover {
+    background-color: #219150;
+}
+
+.btn-secondary {
+    background: #4a4a4a;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#reportDatePicker {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}

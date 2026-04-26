@@ -33,31 +33,77 @@
     <div class="main">
         <h2>CHECK LIST</h2>
 
-        <!-- 🔷 FORM CONTAINER -->
         <div class="form-container">
             <h3>Add Student</h3>
+
+            <div class="calendar-wrapper">
+
+                <!-- CALENDAR -->
+                <div class="calendar">
+                    <div class="calendar-header">
+                        <button onclick="prevMonth()">‹</button>
+                        <h4 id="monthYear"></h4>
+                        <button onclick="nextMonth()">›</button>
+                    </div>
+
+                    <div class="calendar-days">
+                        <div>Sun</div><div>Mon</div><div>Tue</div>
+                        <div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                    </div>
+
+                    <div id="calendarDates" class="calendar-dates"></div>
+                </div>
+
+                <!-- SIDE PANEL -->
+                <div class="calendar-side">
+                    <button class="add-btn" onclick="openModal()">+ Add Event</button>
+
+                    <div id="eventDisplay" class="event-display">
+                        Click a marked date to see event
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- MODAL -->
+            <div id="eventModal" class="modal">
+                <div class="modal-content">
+                    <h3>Add Event</h3>
+
+                    <p id="selectedDatesText"></p>
+
+                    <input type="text" id="eventReason" placeholder="Enter reason">
+
+                    <div class="modal-buttons">
+                        <button onclick="confirmBlock()">Confirm</button>
+                        <button onclick="closeModal()">Cancel</button>
+                    </div>
+                </div>
+            </div>
 
             <Label font-size:12px;>Name: </Label><label style="color:red; font-size:12px;">*required</label>
             <input type="text" id="name" placeholder="Student Name">
             
             <Label font-size:12px;>Section: </Label><label style="color:red; font-size:12px;">*required</label>
             <input type="text" id="section" placeholder="Section">
-            
+
+            <label>Reason for Community Service:</label>
+            <textarea id="serviceReason" placeholder="Enter reason..." style="width:100%; margin-bottom:10px;"></textarea>
+    
+    
             <div class="date-group">
                 <div>
                     <Label font-size:12px;>Start Date: </Label><label style="color:red; font-size:12px;">*required</label>
                     <input type="date" id="startDate">
                 </div>
-
-                <div>
-                    <label>End Date (optional)</label>
-                    <input type="date" id="endDate">
+                <label>Number of Service Days</label>
+                <input type="number" id="numDays" min="1" placeholder="e.g. 5">
                 </div>
-            </div>
+
+            
 
             <div id="timeContainer" style="display:none;">
                 <label>Hours (for 1-day service)</label>
-                
                 <div class="radio-group">
                     <label><input type="radio" name="hours" value="1"> 1 hr</label>
                     <label><input type="radio" name="hours" value="2"> 2 hrs</label>
@@ -73,7 +119,6 @@
             <button onclick="addStudent()">Save</button>
         </div>
 
-        <!-- 🔷 LIST DISPLAY -->
         <div class="list-container">
             <h3>Student List</h3>
             <table>
@@ -81,11 +126,11 @@
                     <tr>
                         <th>Name</th>
                         <th>Section</th>
+                        <th>Reason</th>
                         <th>Date/Time</th>
                     </tr>
                 </thead>
                 <tbody id="studentTable">
-                    <!-- JS will insert here -->
                 </tbody>
             </table>
         </div>

@@ -1,0 +1,196 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #fcfcfc;
+    color: #4a4a4a;
+}
+
+/* Side Navigation */
+.sidenav {
+    height: 100%;
+    width: 220px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #4a4a4a;
+    padding-top: 20px;
+}
+.sidenav p {
+    font-size: 30px;
+    font-weight: bold;
+    color: #ffd1dc;
+    text-align: center;
+    padding: 20px 10px;
+    margin: 0;
+    letter-spacing: 1px;
+    word-break: break-word;
+}
+.sidenav a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    text-decoration: none;
+    font-size: 16px;
+    color: #ddd;
+    transition: all 0.25s ease;
+}
+
+.sidenav a i {
+    font-size: 18px;
+    transition: transform 0.25s ease;
+}
+
+/* 🔥 Hover = pop out */
+.sidenav a:hover {
+    background-color: #575757;
+    color: #4a4a4a;
+    transform: scale(1.05); /* POP effect */
+    padding-left: 26px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.sidenav a:hover i {
+    transform: scale(1.2);
+}
+
+.sidenav a.active {
+    background-color: #ffd1dc;
+    color: #4a4a4a;
+    font-weight: bold; 
+}
+
+/* keep icon black when active */
+.sidenav a.active i {
+    color: #4a4a4a;
+}
+/* Logo */
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px;
+}
+
+.logo i {
+    font-size: 26px;
+    color: white;
+}
+
+.logo p {
+    font-size: 18px;
+    color: white;
+    margin: 0;
+}
+
+.main {
+    margin-left: 220px;
+    padding: 20px;
+
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.track-table {
+    width: 100%;width: 100%;
+    table-layout: fixed;border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* Header */
+.track-table th {
+    background: #111;
+    color: #4a4a4a;
+    padding: 14px;
+    text-align: left;
+    font-size: 14px;
+}
+
+/* Cells */
+.track-table td {
+    border-bottom: 1px solid #eee;
+    padding: 12px;
+    vertical-align: top;
+    font-size: 13px;
+}
+
+/* Session container (Morning / Break / Lunch blocks) */
+.track-table td div {
+    background: #fff5f7;
+    padding: 8px;
+    margin: 0 auto 8px auto; /* centers the block */
+    border-radius: 8px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* centers content inside */
+}
+.track-table td:nth-child(3),
+.track-table td:nth-child(4),
+.track-table td:nth-child(5) {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.track-table th:nth-child(3),
+.track-table th:nth-child(4),
+.track-table th:nth-child(5) {
+    text-align: center;
+}
+
+.track-table th:nth-child(1),
+.track-table td:nth-child(1) {
+    width: 30%;
+}
+
+.track-table th:nth-child(2),
+.track-table td:nth-child(2) {
+    width: 10%;
+}
+
+.track-table th:nth-child(3),
+.track-table td:nth-child(3),
+.track-table th:nth-child(4),
+.track-table td:nth-child(4),
+.track-table th:nth-child(5),
+.track-table td:nth-child(5) {
+    width: 10%;
+}
+
+.track-table button {
+    display: block;
+    margin-top: 5px;
+    padding: 6px 10px;
+    font-size: 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background: #4a4a4a;
+    color: white;
+    width: 100%;
+}
+
+/* Disabled buttons */
+.track-table button:disabled {
+    background: #bbb;
+    cursor: not-allowed;
+}
+
+/* Hover effect */
+.track-table button:hover:not(:disabled) {
+    background: #ffd1dc;;
+}

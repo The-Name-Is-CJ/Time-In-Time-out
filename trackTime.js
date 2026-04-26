@@ -4,9 +4,6 @@ window.onload = function () {
     loadSchedule();
 };
 
-function isSameDate(date1, date2) {
-    return date1 === date2;
-}
 // Load schedule for selected date
 function loadSchedule() {
     let selectedDate = document.getElementById("selectedDate").value;
@@ -14,13 +11,15 @@ function loadSchedule() {
     table.innerHTML = "";
 
     let today = new Date().toISOString().split("T")[0];
-
     let students = JSON.parse(localStorage.getItem("students")) || [];
 
-    let filtered = students.filter(s =>
-        selectedDate >= s.startDate &&
-        selectedDate <= s.endDate
-    );
+    // Filter students who are scheduled for the specific selected date
+    let filtered = students.filter(s => s.dates && s.dates.includes(selectedDate));
+
+    if (filtered.length === 0) {
+        table.innerHTML = "<tr><td colspan='6' style='text-align:center;'>No students scheduled for this date.</td></tr>";
+        return;
+    }
 
     filtered.forEach((student) => {
         let row = table.insertRow();
@@ -29,28 +28,30 @@ function loadSchedule() {
         row.insertCell(0).innerHTML = `<strong>${student.name}</strong>`;
         row.insertCell(1).innerHTML = `<strong>${student.section}</strong>`;
 
-        // MORNING COLUMN
-        let morningCell = row.insertCell(2);
-        morningCell.appendChild(createSessionUI(student, "morning(am)", selectedDate, today));
-
-        // BREAK COLUMN
-        let breakCell = row.insertCell(3);
-        breakCell.appendChild(createSessionUI(student, "After Break(am)", selectedDate, today));
-
-        // LUNCH COLUMN
-        let lunchCell = row.insertCell(4);
-        lunchCell.appendChild(createSessionUI(student, "After Lunch(pm)", selectedDate, today));
+        // Create cells for the three sessions
+        const sessionKeys = ["morning", "break", "lunch"];
+        
+        sessionKeys.forEach((key, index) => {
+            let cell = row.insertCell(index + 2);
+            cell.appendChild(createSessionUI(student, key, selectedDate, today));
+        });
     });
 }
-function createSessionUI(student, sessionName, selectedDate, today) {
-    let container = document.createElement("div");
-    container.style.marginBottom = "10px";
 
-    let session = student.sessions?.[sessionName] || { timeIn: null, timeOut: null };
+function createSessionUI(student, sessionKey, selectedDate, today) {
+    let container = document.createElement("div");
+    container.className = "session-controls";
+
+    // Attendance is stored by date, then by session
+    // Structure: student.attendance["2026-04-10"]["morning"] = {timeIn, timeOut}
+    let attendance = student.attendance || {};
+    let dailyRecord = attendance[selectedDate] || {};
+    let session = dailyRecord[sessionKey] || { timeIn: null, timeOut: null };
 
     // ===== TIME IN BUTTON =====
     let inBtn = document.createElement("button");
-    inBtn.innerText = session.timeIn || "Time In";
+    inBtn.innerText = session.timeIn || "In";
+    inBtn.className = session.timeIn ? "btn-recorded" : "btn-action";
 
     // Disable if already used OR not today
     if (session.timeIn || selectedDate !== today) {
@@ -58,56 +59,51 @@ function createSessionUI(student, sessionName, selectedDate, today) {
     }
 
     inBtn.onclick = function () {
-        let confirmIn = confirm("Are you sure you want to Time In?");
-        if (!confirmIn) return;
-
-        session.timeIn = new Date().toLocaleTimeString();
-        saveSession(student, sessionName, session);
-        loadSchedule();
+        if (confirm(`Time In for ${sessionKey}?`)) {
+            session.timeIn = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            saveAttendance(student, selectedDate, sessionKey, session);
+            loadSchedule();
+        }
     };
-
-    container.appendChild(inBtn);
 
     // ===== TIME OUT BUTTON =====
     let outBtn = document.createElement("button");
-    outBtn.innerText = session.timeOut || "Time Out";
+    outBtn.innerText = session.timeOut || "Out";
+    outBtn.className = session.timeOut ? "btn-recorded" : "btn-action";
 
-    // Disable if already used OR not today
-    if (session.timeOut || selectedDate !== today) {
+    // Disable if already used OR not today OR if they haven't timed in yet
+    if (session.timeOut || selectedDate !== today || !session.timeIn) {
         outBtn.disabled = true;
     }
 
     outBtn.onclick = function () {
-        let confirmOut = confirm("Are you sure you want to Time Out?");
-        if (!confirmOut) return;
-
-        session.timeOut = new Date().toLocaleTimeString();
-        saveSession(student, sessionName, session);
-        loadSchedule();
+        if (confirm(`Time Out for ${sessionKey}?`)) {
+            session.timeOut = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            saveAttendance(student, selectedDate, sessionKey, session);
+            loadSchedule();
+        }
     };
 
+    container.appendChild(inBtn);
     container.appendChild(outBtn);
-
     return container;
 }
 
-function saveSession(student, sessionName, sessionData) {
+function saveAttendance(student, dateStr, sessionKey, sessionData) {
     let students = JSON.parse(localStorage.getItem("students")) || [];
 
-    let index = students.findIndex(s =>
-        s.name === student.name &&
-        s.startDate === student.startDate
-    );
+    // Find the specific student in the global array
+    let studentIndex = students.findIndex(s => s.name === student.name && s.section === student.section);
 
-    if (!students[index].sessions) {
-        students[index].sessions = {
-            morning: { timeIn: null, timeOut: null },
-            break: { timeIn: null, timeOut: null },
-            lunch: { timeIn: null, timeOut: null }
-        };
+    if (studentIndex !== -1) {
+        if (!students[studentIndex].attendance) {
+            students[studentIndex].attendance = {};
+        }
+        if (!students[studentIndex].attendance[dateStr]) {
+            students[studentIndex].attendance[dateStr] = {};
+        }
+
+        students[studentIndex].attendance[dateStr][sessionKey] = sessionData;
+        localStorage.setItem("students", JSON.stringify(students));
     }
-
-    students[index].sessions[sessionName] = sessionData;
-
-    localStorage.setItem("students", JSON.stringify(students));
-} 
+}
