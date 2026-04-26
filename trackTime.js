@@ -2,9 +2,7 @@ window.onload = function () {
     let today = new Date().toISOString().split("T")[0];
     document.getElementById("selectedDate").value = today;
     loadSchedule();
-};
-
-// Load schedule for selected date
+}; 
 function loadSchedule() {
     let selectedDate = document.getElementById("selectedDate").value;
     let table = document.getElementById("scheduleTable");
@@ -12,8 +10,7 @@ function loadSchedule() {
 
     let today = new Date().toISOString().split("T")[0];
     let students = JSON.parse(localStorage.getItem("students")) || [];
-
-    // Filter students who are scheduled for the specific selected date
+ 
     let filtered = students.filter(s => s.dates && s.dates.includes(selectedDate));
 
     if (filtered.length === 0) {
@@ -23,12 +20,10 @@ function loadSchedule() {
 
     filtered.forEach((student) => {
         let row = table.insertRow();
-
-        // NAME + SECTION
+ 
         row.insertCell(0).innerHTML = `<strong>${student.name}</strong>`;
         row.insertCell(1).innerHTML = `<strong>${student.section}</strong>`;
-
-        // Create cells for the three sessions
+ 
         const sessionKeys = ["morning", "break", "lunch"];
         
         sessionKeys.forEach((key, index) => {
@@ -40,20 +35,15 @@ function loadSchedule() {
 
 function createSessionUI(student, sessionKey, selectedDate, today) {
     let container = document.createElement("div");
-    container.className = "session-controls";
-
-    // Attendance is stored by date, then by session
-    // Structure: student.attendance["2026-04-10"]["morning"] = {timeIn, timeOut}
+    container.className = "session-controls"; 
     let attendance = student.attendance || {};
     let dailyRecord = attendance[selectedDate] || {};
     let session = dailyRecord[sessionKey] || { timeIn: null, timeOut: null };
-
-    // ===== TIME IN BUTTON =====
+ 
     let inBtn = document.createElement("button");
     inBtn.innerText = session.timeIn || "In";
     inBtn.className = session.timeIn ? "btn-recorded" : "btn-action";
-
-    // Disable if already used OR not today
+ 
     if (session.timeIn || selectedDate !== today) {
         inBtn.disabled = true;
     }
@@ -65,13 +55,11 @@ function createSessionUI(student, sessionKey, selectedDate, today) {
             loadSchedule();
         }
     };
-
-    // ===== TIME OUT BUTTON =====
+ 
     let outBtn = document.createElement("button");
     outBtn.innerText = session.timeOut || "Out";
     outBtn.className = session.timeOut ? "btn-recorded" : "btn-action";
-
-    // Disable if already used OR not today OR if they haven't timed in yet
+ 
     if (session.timeOut || selectedDate !== today || !session.timeIn) {
         outBtn.disabled = true;
     }
@@ -91,8 +79,7 @@ function createSessionUI(student, sessionKey, selectedDate, today) {
 
 function saveAttendance(student, dateStr, sessionKey, sessionData) {
     let students = JSON.parse(localStorage.getItem("students")) || [];
-
-    // Find the specific student in the global array
+ 
     let studentIndex = students.findIndex(s => s.name === student.name && s.section === student.section);
 
     if (studentIndex !== -1) {

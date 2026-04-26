@@ -160,14 +160,32 @@ body {
 
 .save-btn-container {
     text-align: right; 
+    margin-top: 20px;
 }
 
-.form-container .save-btn {
-    width: auto;
-    padding: 10px 40px;
-    font-weight: bold;
-    background: #4a4a4a;
+.form-container .save-btn { 
+    width: 250px;  
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold; 
+    background-color: #4a4a4a;
     color: white;
+    border: 1px solid #ddd; 
+    border-radius: 8px; 
+    cursor: pointer;
+    transition: 0.3s;
+    box-sizing: border-box;
+    display: inline-block;  
+}
+.form-container .save-btn:hover {
+    background-color: #ffd1dc;
+    color: #4a4a4a;
+    transform: scale(1.02); 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.form-container .save-btn:active {
+    transform: scale(0.98);
 }
 
 .left-col {
