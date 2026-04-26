@@ -28,25 +28,24 @@
 
     </div>
 
-   <div class="main">
-    <h2>Reports Dashboard</h2>
+    <div class="main">
+        <h2>Reports Dashboard</h2>
 
-    <div class="report-controls">
-        <div class="control-group">
-            <label>Filter by Date:</label>
-            <input type="date" id="reportDatePicker" onchange="showReport()">
-            <button onclick="clearDateFilter()" class="btn-secondary">Show All Dates</button>
-        </div>
-        <button onclick="exportTableToCSV('studentListTable', 'Student_Service_List')" class="btn-excel">
-            <i class='bx bxs-file-export'></i> Export List to Excel
-        </button>
-        <button onclick="exportTableToCSV('attendanceTable', 'Attendance_Report')" class="btn-excel">
-            <i class='bx bxs-spreadsheet'></i> Export Attendance to Excel
-        </button>
-    </div>
+        <div class="report-controls">
+            <div class="control-group">
+                <label>Filter by Date:</label>
+                <input type="date" id="reportDatePicker" onchange="showReport()">
+                <button onclick="clearDateFilter()" class="btn-secondary">Show All Dates</button>
+            </div>
+            </div>
 
-    <div class="report-section">
-            <h3>Student Service Registry</h3>
+        <div class="report-section">
+            <div class="export-header">
+                <h3>Student Service Registry</h3>
+                <button onclick="exportTableToCSV('studentListTable', 'Student_Service_List')" class="btn-excel-small">
+                    <i class='bx bxs-file-export'></i> Export to Excel
+                </button>
+            </div>
             <table class="report-table" id="studentListTable">
                 <thead>
                     <tr>
@@ -61,7 +60,12 @@
         </div>
 
         <div class="report-section">
-            <h3>Time Log (In/Out Records)</h3>
+            <div class="export-header">
+                <h3>Time Log (In/Out Records)</h3>
+                <button onclick="exportTableToCSV('attendanceTable', 'Attendance_Report')" class="btn-excel-small">
+                    <i class='bx bxs-spreadsheet'></i> Export to Excel
+                </button>
+            </div>
             <table class="report-table" id="attendanceTable">
                 <thead>
                     <tr>
@@ -73,6 +77,64 @@
                     </tr>
                 </thead>
                 <tbody id="attendanceContent"></tbody>
+            </table>
+        </div>
+
+        <div class="report-section">
+            <div class="export-header">
+                <h3 style="border-left-color: #27ae60;">Completed Service</h3>
+                <button onclick="exportTableToCSV('completedTable', 'Completed_Service_Report')" class="btn-excel-small">
+                    <i class='bx bxs-check-circle'></i> Export to Excel
+                </button>
+            </div>
+            <table class="report-table" id="completedTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Section</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="completedContent"></tbody>
+            </table>
+        </div>
+
+        <div class="report-section">
+            <div class="export-header">
+                <h3 style="border-left-color: #f39c12;">Incomplete Logs</h3>
+                <button onclick="exportTableToCSV('incompleteTable', 'Incomplete_Logs_Report')" class="btn-excel-small">
+                    <i class='bx bxs-error'></i> Export to Excel
+                </button>
+            </div>
+            <table class="report-table" id="incompleteTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Date</th>
+                        <th>Issue</th>
+                    </tr>
+                </thead>
+                <tbody id="incompleteContent"></tbody>
+            </table>
+        </div>
+
+        <div class="report-section">
+            <div class="export-header">
+                <h3 style="border-left-color: #e74c3c;">Absent Records</h3>
+                <button onclick="exportTableToCSV('absentTable', 'Absent_Records_Report')" class="btn-excel-small">
+                    <i class='bx bxs-x-circle'></i> Export to Excel
+                </button>
+            </div>
+            <table class="report-table" id="absentTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="absentContent"></tbody>
             </table>
         </div>
     </div>

@@ -6,46 +6,73 @@ function clearDateFilter() {
     document.getElementById("reportDatePicker").value = "";
     showReport();
 }
-
 function showReport() {
     const filterDate = document.getElementById("reportDatePicker").value;
     const students = JSON.parse(localStorage.getItem("students")) || [];
     
-    const listTable = document.getElementById("studentListContent");
-    const attendanceTable = document.getElementById("attendanceContent");
-    
-    listTable.innerHTML = "";
-    attendanceTable.innerHTML = "";
+    // Clear all tables
+    const tables = [
+        "studentListContent", "attendanceContent", 
+        "completedContent", "incompleteContent", "absentContent"
+    ];
+    tables.forEach(id => document.getElementById(id).innerHTML = "");
 
     students.forEach(student => {
-        // --- Logic for TABLE 1 (General Registry) ---
-        // If filter is set, only show student if they are scheduled for that day
+        const attendance = student.attendance || {};
+        let totalScheduled = student.dates.length;
+        let completedDays = 0;
+
+        // --- Logic for Registry & Attendance (Existing) ---
         if (!filterDate || student.dates.includes(filterDate)) {
-            let row1 = listTable.insertRow();
-            row1.innerHTML = `
-                <td><strong>${student.name}</strong></td>
-                <td>${student.section}</td>
-                <td>${student.reason}</td>
-                <td>${student.dates.join(", ")}</td>
-            `;
+            let row = document.getElementById("studentListContent").insertRow();
+            row.innerHTML = `<td><strong>${student.name}</strong></td><td>${student.section}</td><td>${student.reason}</td><td>${student.dates.join(", ")}</td>`;
         }
 
-        // --- Logic for TABLE 2 (Time Logs) ---
-        const attendance = student.attendance || {};
+        // --- Process Every Scheduled Date ---
         student.dates.forEach(date => {
-            // Only show the specific date if filter is active
-            if (filterDate && date !== filterDate) return;
+            const logs = attendance[date] || null;
+            const isFilterMatch = !filterDate || date === filterDate;
 
-            const logs = attendance[date] || {};
-            let row2 = attendanceTable.insertRow();
-            row2.innerHTML = `
-                <td><strong>${student.name}</strong></td>
-                <td>${date}</td>
-                <td>${formatLog(logs.morning)}</td>
-                <td>${formatLog(logs.break)}</td>
-                <td>${formatLog(logs.lunch)}</td>
-            `;
+            if (isFilterMatch) {
+                // Fill Time Log Table
+                let rowLog = document.getElementById("attendanceContent").insertRow();
+                rowLog.innerHTML = `<td><strong>${student.name}</strong></td><td>${date}</td>
+                    <td>${formatLog(logs ? logs.morning : null)}</td>
+                    <td>${formatLog(logs ? logs.break : null)}</td>
+                    <td>${formatLog(logs ? logs.lunch : null)}</td>`;
+            }
+
+            // --- Status Logic ---
+            if (!logs) {
+                // ABSENT: No record at all for this date
+                if (isFilterMatch) {
+                    let rowAbs = document.getElementById("absentContent").insertRow();
+                    rowAbs.innerHTML = `<td><strong>${student.name}</strong></td><td>${date}</td><td><span style="color:red">No Attendance recorded</span></td>`;
+                }
+            } else {
+                // Check for Incomplete (Has record but missing a Time In or Time Out)
+                let sessions = [logs.morning, logs.break, logs.lunch];
+                let isMissingAny = sessions.some(s => s && (!s.timeIn || !s.timeOut));
+                let hasAtLeastOne = sessions.some(s => s && s.timeIn);
+
+                if (isMissingAny) {
+                    if (isFilterMatch) {
+                        let rowInc = document.getElementById("incompleteContent").insertRow();
+                        rowInc.innerHTML = `<td><strong>${student.name}</strong></td><td>${date}</td><td><span style="color:#f39c12">Forgot to Time In or Out</span></td>`;
+                    }
+                } else if (hasAtLeastOne) {
+                    // This day is fully completed
+                    completedDays++;
+                }
+            }
         });
+
+        // --- COMPLETED SERVICE LOGIC ---
+        // A student is completed if their fully cleared days equal their total scheduled days
+        if (completedDays === totalScheduled && totalScheduled > 0) {
+            let rowComp = document.getElementById("completedContent").insertRow();
+            rowComp.innerHTML = `<td><strong>${student.name}</strong></td><td>${student.section}</td><td>${student.reason}</td><td><span style="color:green; font-weight:bold;">100% Cleared</span></td>`;
+        }
     });
 }
 
@@ -54,16 +81,15 @@ function formatLog(session) {
     return `${session.timeIn || '--'} to ${session.timeOut || '--'}`;
 }
 
-// --- EXCEL EXPORT FUNCTION ---
 function exportTableToCSV(tableID, filename) {
     let csv = [];
-    let rows = document.getElementById(tableID).querySelectorAll("tr");
+    let table = document.getElementById(tableID);
+    let rows = table.querySelectorAll("tr"); // This gets both th and td rows
     
     for (let i = 0; i < rows.length; i++) {
         let row = [], cols = rows[i].querySelectorAll("td, th");
         for (let j = 0; j < cols.length; j++) {
-            // Clean text of commas to avoid breaking CSV format
-            let data = cols[j].innerText.replace(/,/g, " | ");
+            let data = cols[j].innerText.replace(/,/g, " | ").replace(/\n/g, " ");
             row.push('"' + data + '"');
         }
         csv.push(row.join(","));

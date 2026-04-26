@@ -117,10 +117,19 @@ body {
     gap: 10px;
 }
 
-.control-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.control-group input[type="date"] {
+    height: 40px; /* Matches height of your buttons */
+    padding: 0 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-family: inherit;
+    color: #4a4a4a;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.control-group input[type="date"]:focus {
+    border-color: #ffd1dc;
 }
 
 .report-section {
@@ -133,34 +142,118 @@ body {
     color: #4a4a4a;
 }
 
-.btn-excel {
-    background-color: #27ae60; /* Excel Green */
+.export-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.export-header h3 {
+    margin: 0; /* Remove default margin to align better with button */
+} 
+.btn-excel-small {
+    background-color: #219150; /* Excel Green */
     color: white;
     border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
+    padding: 6px 12px;
+    border-radius: 6px;
     cursor: pointer;
+    font-size: 12px;
     font-weight: bold;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
+    transition: all 0.2s ease;
 }
 
-.btn-excel:hover {
-    background-color: #219150;
+.btn-excel-small i {
+    font-size: 16px;
 }
 
+.btn-excel-small:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    filter: brightness(1.1);
+}
+
+/* Ensure the table doesn't cramp the header */
+.report-section {
+    margin-bottom: 50px;
+}
 .btn-secondary {
     background: #4a4a4a;
     color: white;
     border: none;
-    padding: 8px 12px;
-    border-radius: 4px;
+    height: 40px; /* Unified height */
+    padding: 0 15px;
+    border-radius: 6px;
     cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn-secondary:hover {
+    background-color: #ffd1dc;
+    color: #4a4a4a;
+}
+/* --- Table Design (Inherited from Track Time) --- */
+.report-table {
+    width: 100%; 
+    table-layout: fixed; 
+    border-collapse: collapse;
+    background: white;
+    border: 1px solid #ddd;
+    margin-top: 10px;
+    border-radius: 12px;
+    overflow: hidden; /* Ensures rounded corners show */
+}
+
+/* Header Styling */
+.report-table th {
+    background-color: #f4f4f4; 
+    color: #4a4a4a;
+    padding: 15px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid #ddd; 
+    border-bottom: 2px solid #ffd1dc; /* The signature pink accent */
+}
+
+/* Cell Styling */
+.report-table td {
+    border: 1px solid #ddd;
+    padding: 15px;
+    vertical-align: middle;
+    font-size: 13px;
+    color: #666;
+    word-wrap: break-word;
+}
+
+/* Row Hover & Striping */
+.report-table tbody tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+.report-table tbody tr:hover {
+    background-color: #f1f1f1;
 }
 
 #reportDatePicker {
     padding: 8px;
     border-radius: 4px;
     border: 1px solid #ccc;
+}
+#completedTable th { border-bottom: 2px solid #27ae60; }
+#incompleteTable th { border-bottom: 2px solid #f39c12; }
+#absentTable th { border-bottom: 2px solid #e74c3c; }
+
+/* Status tags for better reading */
+.report-table td span {
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: bold;
 }
