@@ -145,68 +145,75 @@ function formatPrettyDate(dateStr) {
     const options = { month: 'short', day: 'numeric' };
     return new Date(dateStr).toLocaleDateString(undefined, options);
 }
+
 function addStudent() {
     let name = document.getElementById("name").value;
     let section = document.getElementById("section").value;
     let startInput = document.getElementById("startDate").value;
     let daysInput = parseInt(document.getElementById("numDays").value);
-    let reason = document.getElementById("serviceReason").value || "Community Service";
+    
+    // Get Offense Type
+    let offenseType = document.querySelector('input[name="offenseType"]:checked').value;
+    
+    // Process Reason into Bullets
+    let reasonRaw = document.getElementById("serviceReason").value;
+    let reasonLines = reasonRaw.split('\n').filter(line => line.trim() !== "");
+    let bulletedReason = reasonLines.map(line => `• ${line.trim()}`).join('\n');
 
     if (!name || !section || !startInput || isNaN(daysInput)) {
-        alert("Please fill name, section, start date, and number of days!");
+        alert("Please fill all required fields!");
         return;
     }
 
-    // 1. Initialize variables BEFORE the loop
+    // ... (Keep your existing date calculation logic here) ...
     let current = new Date(startInput);
     let currentHolidays = getHolidays(current.getFullYear()); 
     let finalSchedule = [];
     let added = 0;
     let safetyCounter = 0;
 
-    // 2. The Logic Loop
     while (added < daysInput && safetyCounter < 365) {
         let dateStr = formatDate(current);
         let day = current.getDay();
-
-        // Refresh holiday list if year changes (e.g., Dec to Jan)
-        if (current.getFullYear() !== parseInt(dateStr.split('-')[0])) {
-            currentHolidays = getHolidays(current.getFullYear());
-        }
-
         let isHoliday = currentHolidays.some(h => h.date === dateStr);
         let isWeekend = (day === 0 || day === 6);
         let isBlockedByEvent = blockedDates.some(b => b.date === dateStr);
 
-        // Valid if NOT holiday, NOT weekend, and NOT a blocked event
         if (!isHoliday && !isWeekend && !isBlockedByEvent) {
             finalSchedule.push(dateStr);
             added++;
         }
-        
         current.setDate(current.getDate() + 1);
         safetyCounter++;
     }
 
-    // 3. Save Student
+    let hourVal = "";
+    if (daysInput === 1) {
+        let checkedRadio = document.querySelector('input[name="hours"]:checked');
+        if (checkedRadio) hourVal = checkedRadio.value;
+    }
+
+    // Save with the new fields
     let student = {
         name: name,
         section: section,
-        reason: reason,
-        dates: finalSchedule
+        offenseType: offenseType, // New field
+        reason: bulletedReason,   // Formatted field
+        dates: finalSchedule,
+        hours: hourVal
     };
 
     let students = JSON.parse(localStorage.getItem("students")) || [];
     students.push(student);
     localStorage.setItem("students", JSON.stringify(students));
 
-    // 4. Refresh UI
+    // Clear Form
     document.getElementById("name").value = "";
     document.getElementById("section").value = "";
     document.getElementById("serviceReason").value = "";
     document.getElementById("startDate").value = "";
     document.getElementById("numDays").value = "";
-
+    
     loadStudents();
     renderCalendar();
 }
@@ -220,11 +227,10 @@ document.addEventListener("click", function (e) {
         renderCalendar();
     }
 });
-// LOAD TABLE
+
 function loadStudents() {
     let table = document.getElementById("studentTable");
     table.innerHTML = "";
-
     let students = JSON.parse(localStorage.getItem("students")) || [];
 
     students.forEach((s, index) => {
@@ -232,16 +238,35 @@ function loadStudents() {
 
         row.insertCell(0).innerText = s.name;
         row.insertCell(1).innerText = s.section;
-        row.insertCell(2).innerText = s.reason || "-";
-        row.insertCell(3).innerText = (s.dates || []).map(d => formatPrettyDate(d)).join(", ");
 
-        let cell = row.insertCell(3);
+        // Reason Column with Offense Tag and Bullets
+        let reasonCell = row.insertCell(2);
+        let tagClass = s.offenseType === 'Major' ? 'tag-major' : 'tag-minor';
+        reasonCell.innerHTML = `
+            <span class="offense-tag ${tagClass}">${s.offenseType}</span><br>
+            ${s.reason || "-"}
+        `;
+
+        // Date Column
+        let dateCell = row.insertCell(3);
+        let dateDisplay = "";
+        if (s.dates && s.dates.length > 0) {
+            if (s.dates.length === 1) {
+                dateDisplay = formatPrettyDate(s.dates[0]);
+                if (s.hours) dateDisplay += ` (${s.hours} hr/s)`;
+            } else {
+                dateDisplay = `${formatPrettyDate(s.dates[0])} - ${formatPrettyDate(s.dates[s.dates.length-1])}`;
+            }
+        }
+        dateCell.innerText = dateDisplay;
+
+        // Delete Button
+        let actionCell = row.insertCell(4);
         let btn = document.createElement("button");
-
-        btn.innerText = "Delete";
+        btn.innerHTML = "<i class='bx bx-trash'></i>";
+        btn.className = "delete-btn";
         btn.onclick = () => deleteStudent(index);
-
-        cell.appendChild(btn);
+        actionCell.appendChild(btn);
     });
 }
 
@@ -264,21 +289,25 @@ document.getElementById("numDays").addEventListener("input", function () {
     }
 });
 
-// DELETE
 function deleteStudent(index) {
     let students = JSON.parse(localStorage.getItem("students")) || [];
+    let studentName = students[index].name;
 
-    let removedDates = students[index].dates;
+    // Browser native confirmation popup
+    if (confirm(`Are you sure you want to delete the records for ${studentName}?`)) {
+        let removedDates = students[index].dates;
 
-    blockedDates = blockedDates.filter(b => !removedDates.includes(b.date));
+        // Clean up blocked dates associated with this student
+        blockedDates = blockedDates.filter(b => !removedDates.includes(b.date));
 
-    students.splice(index, 1);
+        students.splice(index, 1);
 
-    localStorage.setItem("students", JSON.stringify(students));
-    localStorage.setItem("blockedDates", JSON.stringify(blockedDates));
+        localStorage.setItem("students", JSON.stringify(students));
+        localStorage.setItem("blockedDates", JSON.stringify(blockedDates));
 
-    loadStudents();
-    renderCalendar();
+        loadStudents();
+        renderCalendar();
+    }
 }
 
 function getDateRange(start, end) {

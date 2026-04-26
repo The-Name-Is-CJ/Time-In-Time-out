@@ -29,16 +29,15 @@
 
     </div>
 
-    <!-- MAIN -->
     <div class="main">
-        <h2>CHECK LIST</h2>
+        <h2>Student Community Service List</h2>
 
         <div class="form-container">
             <h3>Add Student</h3>
 
             <div class="calendar-wrapper">
 
-                <!-- CALENDAR -->
+
                 <div class="calendar">
                     <div class="calendar-header">
                         <button onclick="prevMonth()">‹</button>
@@ -54,7 +53,6 @@
                     <div id="calendarDates" class="calendar-dates"></div>
                 </div>
 
-                <!-- SIDE PANEL -->
                 <div class="calendar-side">
                     <button class="add-btn" onclick="openModal()">+ Add Event</button>
 
@@ -81,26 +79,38 @@
                 </div>
             </div>
 
-            <Label font-size:12px;>Name: </Label><label style="color:red; font-size:12px;">*required</label>
-            <input type="text" id="name" placeholder="Student Name">
-            
-            <Label font-size:12px;>Section: </Label><label style="color:red; font-size:12px;">*required</label>
-            <input type="text" id="section" placeholder="Section">
+            <div class="form-grid">
+                <div class="left-col">
+                    <label>Name: <span style="color:red;">*</span></label>
+                    <input type="text" id="name" placeholder="Student Name">
 
-            <label>Reason for Community Service:</label>
-            <textarea id="serviceReason" placeholder="Enter reason..." style="width:100%; margin-bottom:10px;"></textarea>
+                    <label style="margin-top: 10px;">Section: <span style="color:red;">*</span></label>
+                    <input type="text" id="section" placeholder="Section">
+                </div>
+
+                <div class="right-col">
+                    <label>Offense Type: <span style="color:red;">*</span></label>
+                    <div class="radio-group" style="margin-bottom: 15px;">
+                        <label><input type="radio" name="offenseType" value="Minor" checked> Minor Offense</label>
+                        <label><input type="radio" name="offenseType" value="Major"> Major Offense</label>
+                    </div>
+
+                    <label>Reason for Community Service (One per line):</label>
+                    <textarea id="serviceReason" placeholder="• Tardiness&#10;• Absence"></textarea>
+                </div>
+            </div>
+        
     
-    
-            <div class="date-group">
-                <div>
-                    <Label font-size:12px;>Start Date: </Label><label style="color:red; font-size:12px;">*required</label>
+            <div class="date-row">
+                <div class="input-group">
+                    <label>Start Date: <span style="color:red;">*</span></label>
                     <input type="date" id="startDate">
                 </div>
-                <label>Number of Service Days</label>
-                <input type="number" id="numDays" min="1" placeholder="e.g. 5">
+                <div class="input-group">
+                    <label>Number of Service Days:</label>
+                    <input type="number" id="numDays" min="1" placeholder="e.g. 5">
                 </div>
-
-            
+            </div>
 
             <div id="timeContainer" style="display:none;">
                 <label>Hours (for 1-day service)</label>
@@ -116,7 +126,9 @@
                 </div>
             </div>
 
-            <button onclick="addStudent()">Save</button>
+            <div class="save-btn-container">
+                <button class="save-btn" onclick="addStudent()">Save Student</button>
+            </div>
         </div>
 
         <div class="list-container">
@@ -128,7 +140,7 @@
                         <th>Section</th>
                         <th>Reason</th>
                         <th>Date/Time</th>
-                    </tr>
+                        <th>Action</th> </tr>
                 </thead>
                 <tbody id="studentTable">
                 </tbody>
