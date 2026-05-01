@@ -4,6 +4,8 @@
     <title>Track Time</title>
     <link rel="stylesheet" href="trackTime.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
 <body>
 
@@ -14,7 +16,7 @@
             <p>Community Services</p>
         </div>
 
-        <a href="addlist.html">
+        <a href="index.html">
             <i class='bx bx-list-plus'></i> Add List
         </a>
 
@@ -33,12 +35,11 @@
 
     <div class="form-container">
         <h3>Select Date</h3>
-
         <div class="date-row">
-            <div class="input-group">
-                <input type="date" id="selectedDate">
+            <div class="input-group"> 
+                <i class='bx bx-calendar' style="position: absolute; margin: 13px; color: #4a4a4a; z-index: 1;"></i>
+                <input type="text" id="selectedDate" placeholder="Select a date..." readonly>
             </div>
-            <button class="show-schedule-btn" onclick="loadSchedule()">Show Schedule</button>
         </div>
     </div>
 

@@ -44,7 +44,29 @@ let tempSelected = [];
 window.onload = function () {
     renderCalendar();
     loadStudents();
+    initDatePicker(); 
 };
+
+function initDatePicker() {
+    const year = new Date().getFullYear();
+    const holidayDates = getHolidays(year).map(h => h.date);
+    const manualBlocked = blockedDates.map(b => b.date);
+
+    flatpickr("#startDate", {
+        minDate: "today",
+        dateFormat: "Y-m-d",
+        locale: {
+            firstDayOfWeek: 0  
+        },
+        disable: [
+            function(date) { 
+                return (date.getDay() === 0 || date.getDay() === 6);
+            },
+            ...holidayDates,
+            ...manualBlocked
+        ]
+    });
+}
 
 function formatDate(date) {
     let d = new Date(date),
@@ -58,7 +80,6 @@ function formatDate(date) {
     return [year, month, day].join('-');
 }
 
-
 function renderCalendar() {
     const container = document.getElementById("calendarDates");
     const monthYear = document.getElementById("monthYear");
@@ -66,18 +87,17 @@ function renderCalendar() {
 
     let year = currentDate.getFullYear();
     let month = currentDate.getMonth();
- 
     const currentHolidays = getHolidays(year);
 
     monthYear.innerText = currentDate.toLocaleString("default", { month: "long", year: "numeric" });
 
     let firstDay = new Date(year, month, 1).getDay();
     let lastDate = new Date(year, month + 1, 0).getDate();
-
+ 
     for (let i = 0; i < firstDay; i++) {
         container.innerHTML += "<div></div>";
     }
-
+ 
     for (let i = 1; i <= lastDate; i++) {
         let date = new Date(year, month, i, 0, 0, 0, 0);
         let dateStr = formatDate(date);
@@ -85,17 +105,18 @@ function renderCalendar() {
         div.innerText = i;
 
         let day = date.getDay();
-        
         let holidayObj = currentHolidays.find(h => h.date === dateStr);
         let blockedObj = blockedDates.find(b => b.date === dateStr);
- 
+
         if (holidayObj || blockedObj) {
             div.classList.add("blocked"); 
-            
             div.onclick = (e) => {
                 e.stopPropagation();
-                let reason = holidayObj ? holidayObj.name : blockedObj.reason;
-                document.getElementById("eventDisplay").innerText = dateStr + " - " + reason;
+                if (holidayObj) { 
+                    document.getElementById("eventDisplay").innerText = dateStr + " - " + holidayObj.name;
+                } else { 
+                    openEditModal(dateStr, blockedObj.reason);
+                }
             };
         } 
         else if (day === 0 || day === 6) {
@@ -120,7 +141,7 @@ function renderCalendar() {
         }
         container.appendChild(div);
     }
-} 
+}
 
 function prevMonth() {
     currentDate.setMonth(currentDate.getMonth() - 1);
@@ -180,12 +201,14 @@ function addStudent() {
         let checkedRadio = document.querySelector('input[name="hours"]:checked');
         if (checkedRadio) hourVal = checkedRadio.value;
     }
- 
+  
     let student = {
         name: name,
         section: section,
         offenseType: offenseType,  
         reason: bulletedReason,  
+        startDate: startInput, 
+        requestedDays: daysInput,
         dates: finalSchedule,
         hours: hourVal
     };
@@ -193,8 +216,7 @@ function addStudent() {
     let students = JSON.parse(localStorage.getItem("students")) || [];
     students.push(student);
     localStorage.setItem("students", JSON.stringify(students));
-
-    // Clear Form
+ 
     document.getElementById("name").value = "";
     document.getElementById("section").value = "";
     document.getElementById("serviceReason").value = "";
@@ -244,13 +266,14 @@ function loadStudents() {
             }
         }
         dateCell.innerText = dateDisplay;
- 
+  
         let actionCell = row.insertCell(4);
-        let btn = document.createElement("button");
-        btn.innerHTML = "<i class='bx bx-trash'></i>";
-        btn.className = "delete-btn";
-        btn.onclick = () => deleteStudent(index);
-        actionCell.appendChild(btn);
+ 
+        let delBtn = document.createElement("button");
+        delBtn.innerHTML = "<i class='bx bx-trash'></i>";
+        delBtn.className = "delete-btn";
+        delBtn.onclick = () => deleteStudent(index);
+        actionCell.appendChild(delBtn);
     });
 }
 
@@ -352,9 +375,88 @@ function confirmBlock() {
     });
 
     localStorage.setItem("blockedDates", JSON.stringify(blockedDates));
-
+    refreshAllSchedules();
     selectedDates = [];
 
     closeModal();
     renderCalendar();
 } 
+
+let currentEditingDate = null; 
+
+    function openEditModal(dateStr, currentReason) {
+        currentEditingDate = dateStr;
+        document.getElementById("editModal").style.display = "block";
+        document.getElementById("editDateText").innerText = "Date: " + dateStr;
+        document.getElementById("editReason").value = currentReason;
+    }
+
+    function closeEditModal() {
+        document.getElementById("editModal").style.display = "none";
+        currentEditingDate = null;
+    }
+ 
+    function updateBlock() {
+        let newReason = document.getElementById("editReason").value;
+        if (!newReason) {
+            alert("Reason cannot be empty!");
+            return;
+        }
+ 
+        blockedDates = blockedDates.map(b => {
+            if (b.date === currentEditingDate) {
+                return { ...b, reason: newReason };
+            }
+            return b;
+        });
+
+        localStorage.setItem("blockedDates", JSON.stringify(blockedDates));
+        closeEditModal();
+        renderCalendar();
+    }
+ 
+    function deleteBlock() {
+        if (confirm(`Do you want to unblock ${currentEditingDate}?`)) {
+            blockedDates = blockedDates.filter(b => b.date !== currentEditingDate);
+            
+            localStorage.setItem("blockedDates", JSON.stringify(blockedDates));
+            refreshAllSchedules();
+            closeEditModal();
+            renderCalendar();
+        }
+    }
+function refreshAllSchedules() {
+    let students = JSON.parse(localStorage.getItem("students")) || [];
+    if (students.length === 0) return;
+
+    const updatedStudents = students.map(student => { 
+        let daysNeeded = student.requestedDays || student.dates.length;
+        let current = new Date(student.startDate);
+        let currentHolidays = getHolidays(current.getFullYear()); 
+        
+        let newSchedule = [];
+        let added = 0;
+        let safetyCounter = 0;
+
+        while (added < daysNeeded && safetyCounter < 365) {
+            let dateStr = formatDate(current);
+            let day = current.getDay();
+            let isHoliday = currentHolidays.some(h => h.date === dateStr);
+            let isWeekend = (day === 0 || day === 6);
+            let isBlockedByEvent = blockedDates.some(b => b.date === dateStr);
+
+            if (!isHoliday && !isWeekend && !isBlockedByEvent) {
+                newSchedule.push(dateStr);
+                added++;
+            }
+            current.setDate(current.getDate() + 1);
+            safetyCounter++;
+        }
+
+        return { ...student, dates: newSchedule };
+    });
+
+    localStorage.setItem("students", JSON.stringify(updatedStudents));
+    loadStudents();  
+    console.log("All student schedules have been updated based on the new calendar constraints.");
+}

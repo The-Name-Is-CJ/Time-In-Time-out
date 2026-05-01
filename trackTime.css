@@ -167,67 +167,41 @@ body {
 .track-table th:nth-child(5), 
 .track-table td:nth-child(5) { 
     width: 18.33%;  
-}
- 
-.date-row {
-    display: flex;
-    align-items: center;   
-    gap: 15px;
-    margin-bottom: 25px;
-}
- 
+} 
+
 .date-row .input-group {
-    flex: 0 0 250px; 
+    position: relative;  
+    flex: 0 0 300px; 
 }
- 
-.date-row input[type="date"] {
+
+#selectedDate {
     width: 100%;
-    height: 44px;  
-    padding: 0 15px;  
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    height: 46px;
+    padding: 0 15px 0 40px;  
+    border: 2px solid #eee;
+    border-radius: 10px;
     font-family: inherit;
-    font-size: 14px;
+    font-size: 15px;
+    font-weight: 500;
     color: #4a4a4a;
     background-color: #fff;
-    box-sizing: border-box;  
-    outline: none;
-    transition: border-color 0.3s;
-}
-
-.date-row input[type="date"]:focus {
-    border-color: #ffd1dc;
-}
- 
-.show-schedule-btn {
-    height: 44px;  
-    background-color: #4a4a4a;
-    color: white;
-    border: none;
-    padding: 0 25px; 
-    font-size: 14px;
-    font-weight: bold;
-    border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
-    text-transform: uppercase;
     box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    outline: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
 }
 
-.show-schedule-btn:hover {
-    background-color: #ffd1dc;
-    color: #4a4a4a;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+#selectedDate:hover {
+    border-color: #ffd1dc;
+    background-color: #fff5f7;
 }
 
+#selectedDate:focus {
+    border-color: #ffd1dc;
+    box-shadow: 0 0 0 4px rgba(255, 209, 220, 0.3);
+}
  
-::-webkit-calendar-picker-indicator {
-    cursor: pointer;
-    filter: invert(0.3);  
-}
 .track-table button {
     display: block;
     margin-top: 5px;
@@ -251,4 +225,49 @@ body {
 .track-table button:hover:not(:disabled) {
     background: #ffd1dc;
     color: #4a4a4a;
+} 
+
+.flatpickr-calendar {
+    background: #ffffff;
+    border: 1px solid #ffd1dc;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border-radius: 12px;
+    font-family: 'Segoe UI', sans-serif;
+} 
+.flatpickr-current-month, .flatpickr-month {
+    color: #4a4a4a !important;
+    fill: #4a4a4a !important;
+}
+ 
+span.flatpickr-weekday {
+    background: #fcfcfc;
+    color: #4a4a4a !important;
+    font-weight: bold;
+}
+ 
+.flatpickr-day.selected, 
+.flatpickr-day.selected:hover {
+    background: #4a4a4a !important;
+    border-color: #4a4a4a !important;
+    color: #ffd1dc !important;
+}
+ 
+.flatpickr-day:hover {
+    background: #ffd1dc !important;
+    border-color: #ffd1dc !important;
+    color: #4a4a4a !important;
+}
+ 
+.flatpickr-day.today {
+    border-color: #ffd1dc !important;
+}
+ 
+.flatpickr-day.flatpickr-disabled {
+    color: #d1d1d1 !important;
+    cursor: not-allowed;
+}
+ 
+#selectedDate {
+    cursor: pointer;
+    background-color: white !important;
 }

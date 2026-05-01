@@ -4,6 +4,8 @@
     <title>Reports</title>
     <link rel="stylesheet" href="reports.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
 <body>
 
@@ -14,7 +16,7 @@
             <p>Community Services</p>
         </div>
 
-        <a href="addlist.html">
+        <a href="index.html">
             <i class='bx bx-list-plus'></i> Add List
         </a>
 
@@ -34,11 +36,14 @@
         <div class="report-controls">
             <div class="control-group">
                 <label>Filter by Date:</label>
-                <input type="date" id="reportDatePicker" onchange="showReport()">
+                <div class="date-input-container">
+                    <i class='bx bx-calendar'></i> 
+                    <input type="text" id="reportDatePicker" placeholder="Select date to filter..." readonly>
+                </div>
                 <button onclick="clearDateFilter()" class="btn-secondary">Show All Dates</button>
             </div>
-            </div>
-
+        </div>
+        
         <div class="report-section">
             <div class="export-header">
                 <h3>Student Service Registry</h3>
@@ -113,6 +118,7 @@
                         <th>Name</th>
                         <th>Date</th>
                         <th>Issue</th>
+                        <th>Actions</th>  
                     </tr>
                 </thead>
                 <tbody id="incompleteContent"></tbody>
@@ -132,6 +138,7 @@
                         <th>Name</th>
                         <th>Date</th>
                         <th>Status</th>
+                        <th>Actions</th> 
                     </tr>
                 </thead>
                 <tbody id="absentContent"></tbody>

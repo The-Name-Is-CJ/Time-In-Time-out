@@ -3,11 +3,12 @@
 <head>
     <title>Add List</title>
     <link rel="stylesheet" href="addlist.css">
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'> 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
-<body>
+<body> 
 
-    <!-- SIDE NAV -->
     <div class="sidenav">
     
         <div class="logo">
@@ -15,7 +16,7 @@
             <p>Community Services</p>
         </div>
 
-        <a href="addlist.html" class="active">
+        <a href="index.html" class="active">
             <i class='bx bx-list-plus'></i> Add List
         </a>
 
@@ -62,11 +63,10 @@
                 </div>
 
             </div>
-
-            <!-- MODAL -->
+ 
             <div id="eventModal" class="modal">
                 <div class="modal-content">
-                    <h3>Add Event</h3>
+                    <h3>Add NO Classes Date</h3>
 
                     <p id="selectedDatesText"></p>
 
@@ -74,11 +74,30 @@
 
                     <div class="modal-buttons">
                         <button onclick="confirmBlock()">Confirm</button>
-                        <button onclick="closeModal()">Cancel</button>
+                        <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+                    </div>
+                </div>
+            </div> 
+
+            <div id="editModal" class="modal" style="display:none;">
+                <div class="modal-content">
+                    <span class="close" onclick="closeEditModal()">&times;</span>
+                    <h3>Edit NO Classes Date</h3>
+                    <p id="editDateText" style="font-weight: bold; color: #d9534f;"></p>
+                    
+                    <label for="editReason">Reason/Event:</label>
+                    <textarea id="editReason" rows="3" style="width: 100%; margin-top: 10px;"></textarea>
+
+                    <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+                        <button class="delete-btn-modal" onclick="deleteBlock()">
+                            <i class='bx bx-trash'></i> Unblock Date
+                        </button>
+                        <button onclick="updateBlock()">Save Changes</button> 
+                        <button class="cancel-btn" onclick="closeEditModal()">Close</button>
                     </div>
                 </div>
             </div>
-
+ 
             <div class="form-grid">
                 <div class="left-col">
                     <label>Name: <span style="color:red;">*</span></label>
@@ -104,7 +123,10 @@
             <div class="date-row">
                 <div class="input-group">
                     <label>Start Date: <span style="color:red;">*</span></label>
-                    <input type="date" id="startDate">
+                    <div class="date-input-wrapper" style="position: relative;"> 
+                        <i class='bx bx-calendar' style="position: absolute; margin: 13px; color: #4a4a4a; z-index: 1;"></i>
+                        <input type="text" id="startDate" placeholder="Select a date" readonly>
+                    </div>
                 </div>
                 <div class="input-group">
                     <label>Number of Service Days:</label>
@@ -131,6 +153,10 @@
             </div>
         </div>
 
+        <button onclick="refreshAllSchedules()" class="add-btn" style="width: auto; padding: 5px 15px; margin-bottom: 10px;">
+            <i class='bx bx-refresh'></i> Sync Schedules with Calendar
+        </button>
+
         <div class="list-container">
             <h3>Student List</h3>
             <table>
@@ -146,8 +172,6 @@
                 </tbody>
             </table>
         </div>
-
-    </div>
 
     <script src="addlist.js"></script>
 </body>

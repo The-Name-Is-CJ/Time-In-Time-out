@@ -423,36 +423,215 @@ table td:nth-child(3) {
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.5);
-    backdrop-filter: blur(2px);  
+    background-color: rgba(0, 0, 0, 0.4);  
+    backdrop-filter: blur(4px); 
 }
 
 .modal-content {
-    background-color: #fff;
-    margin: 15% auto;  
-    padding: 25px;
-    border-radius: 12px;
-    width: 350px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    border: 1px solid #ffd1dc;
+    background-color: #ffffff;
+    margin: 10% auto;  
+    padding: 30px;
+    border-radius: 15px;  
+    width: 400px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    border: 2px solid #ffd1dc;  
+    position: relative;
+    animation: modalSlideDown 0.3s ease-out;
 }
 
+@keyframes modalSlideDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+ 
 .modal-content h3 {
     margin-top: 0;
     color: #4a4a4a;
-}
- 
-.delete-btn {
-    background-color: #ff8fa3;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 13px;
-    transition: background 0.3s;
+    font-size: 22px;
+    border-bottom: 2px solid #ffd1dc;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
 }
 
-.delete-btn:hover {
+.modal-content p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.modal-content label {
+    font-size: 13px;
+    font-weight: bold;
+    color: #4a4a4a;
+    display: block;
+    margin-top: 15px;
+}
+ 
+.modal-content input[type="text"],
+.modal-content textarea {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.modal-content input:focus,
+.modal-content textarea:focus {
+    outline: none;
+    border-color: #ffd1dc;
+    box-shadow: 0 0 5px rgba(255, 209, 220, 0.5);
+}
+ 
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 25px;
+}
+ 
+.modal-content button {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+    border: none;
+}
+ 
+.modal-content button:not(.delete-btn):not(.cancel-btn) {
+    background-color: #4a4a4a;
+    color: white;
+}
+
+.modal-content button:not(.delete-btn):not(.cancel-btn):hover {
+    background-color: #ffd1dc;
+    color: #4a4a4a;
+}
+ 
+.cancel-btn {
+    background-color: #f0f0f0;
+    color: #666;
+}
+
+.cancel-btn:hover {
+    background-color: #e0e0e0;
+}
+ 
+.delete-btn-modal {
+    background-color: #ff8fa3;
+    color: white;
+}
+
+.delete-btn-modal:hover {
     background-color: #ff4d6d;
+}
+ 
+.close {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    font-size: 24px;
+    color: #aaa;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #4a4a4a;
+} 
+
+.flatpickr-calendar {
+    background: #ffffff;
+    border: 1px solid #ffd1dc;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border-radius: 12px;
+}
+ 
+.flatpickr-current-month, 
+.flatpickr-month {
+    color: #4a4a4a !important;
+    fill: #4a4a4a !important;
+}
+ 
+span.flatpickr-weekday {
+    background: #fcfcfc;
+    color: #4a4a4a !important;
+    font-weight: bold;
+}
+ 
+.flatpickr-day.selected, 
+.flatpickr-day.selected:hover {
+    background: #4a4a4a !important;
+    border-color: #4a4a4a !important;
+    color: #ffd1dc !important;  
+}
+ 
+.flatpickr-day:hover {
+    background: #ffd1dc !important;
+    border-color: #ffd1dc !important;
+    color: #4a4a4a !important;
+}
+ 
+.flatpickr-day.today {
+    border-color: #ffd1dc !important;
+}
+
+.flatpickr-day.today:hover {
+    background: #ffd1dc !important;
+    color: #4a4a4a !important;
+}
+ 
+.flatpickr-day.flatpickr-disabled, 
+.flatpickr-day.flatpickr-disabled:hover {
+    color: #d1d1d1 !important;
+    background: transparent !important;
+}
+ 
+.flatpickr-prev-month:hover svg, 
+.flatpickr-next-month:hover svg {
+    fill: #ffd1dc !important;
+}
+ 
+.date-input-wrapper {
+    width: 100%;
+}
+
+#startDate {
+    width: 100%;
+    height: 46px;
+    padding: 0 15px 0 40px;  
+    border: 2px solid #eee;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: #4a4a4a;
+    background-color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    outline: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+}
+
+#startDate:hover {
+    border-color: #ffd1dc;
+    background-color: #fff5f7;
+}
+
+#startDate:focus {
+    border-color: #ffd1dc;
+    box-shadow: 0 0 0 4px rgba(255, 209, 220, 0.3);
+}
+ 
+#startDate::-webkit-calendar-picker-indicator {
+    display: none;
+}
+ 
+.date-row .input-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
