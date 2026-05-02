@@ -1,4 +1,4 @@
-const TEST_MODE = true;
+const TEST_MODE = false;
 document.addEventListener('DOMContentLoaded', function() {
     initTrackDatePicker();
 });

@@ -460,3 +460,20 @@ function refreshAllSchedules() {
     loadStudents();  
     console.log("All student schedules have been updated based on the new calendar constraints.");
 }
+
+function masterReset() { 
+    if (confirm("WARNING: This will permanently delete ALL students, attendance logs, and blocked calendar dates. This cannot be undone.\n\nDo you want to proceed?")) {
+         
+        let password = prompt("Please enter the Master Password to authorize deletion:");
+
+        if (password === "dctcommunityservicepass") { 
+            localStorage.clear();
+ 
+            alert("System Reset Successful. All data has been cleared.");
+ 
+            location.reload();
+        } else if (password !== null) { 
+            alert("Incorrect password. Action cancelled.");
+        }
+    }
+}

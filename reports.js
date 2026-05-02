@@ -25,6 +25,7 @@ function clearDateFilter() {
     input.value = ""; 
     showReport();     
 }
+
 function showReport() {
     const filterDate = document.getElementById("reportDatePicker").value;
     const students = JSON.parse(localStorage.getItem("students")) || [];
@@ -34,11 +35,12 @@ function showReport() {
         "studentListContent", "attendanceContent", 
         "completedContent", "incompleteContent", "absentContent"
     ];
+     
     tables.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.innerHTML = "";
     });
- 
+
     const timeToMinutes = (timeStr) => {
         if (!timeStr) return null;
         const parts = timeStr.match(/(\d+):(\d+)\s+(AM|PM)/);
@@ -60,7 +62,6 @@ function showReport() {
  
         if (!filterDate || student.dates.includes(filterDate)) {
             let row = document.getElementById("studentListContent").insertRow();
-  
             let dateDisplay = "-";
             if (student.dates && student.dates.length > 0) {
                 if (student.dates.length === 1) { 
@@ -72,18 +73,13 @@ function showReport() {
                     dateDisplay = `${formatPrettyDate(startDate)} - ${formatPrettyDate(endDate)}`;
                 }
             }
-
-            row.innerHTML = `
-                <td><strong>${student.name}</strong></td>
-                <td>${student.section}</td>
-                <td>${student.reason}</td>
-                <td>${dateDisplay}</td>
-            `;
+            row.innerHTML = `<td><strong>${student.name}</strong></td><td>${student.section}</td><td>${student.reason}</td><td>${dateDisplay}</td>`;
         }
- 
+
         student.dates.forEach(date => {
             const logs = attendance[date] || null;
             const isFilterMatch = !filterDate || date === filterDate;
+            const isFuture = date > today; 
 
             let status = "";
             let remarks = "";
@@ -101,7 +97,7 @@ function showReport() {
                     }
                 });
                 dailyHours = mins / 60;
- 
+
                 let missing = [];
                 const sessionMap = { morning: "Morning", break: "After Break", lunch: "After Lunch" };
                 Object.keys(sessionMap).forEach(key => {
@@ -112,64 +108,57 @@ function showReport() {
                         if (!sess.timeOut) missing.push(`${sessionMap[key]} (No Time Out)`);
                     }
                 });
- 
-                if (isOneDayStudent && dailyHours >= requiredHours) {
+
+                if ((isOneDayStudent && dailyHours >= requiredHours) || (missing.length === 0)) {
                     status = "Completed";
-                    remarks = `Hours Met (${dailyHours.toFixed(1)}/${requiredHours})`;
-                    completedDaysCount++;
-                } else if (missing.length === 0) {
-                    status = "Completed";
-                    remarks = "Full Attendance";
+                    remarks = isOneDayStudent ? `Hours Met (${dailyHours.toFixed(1)}/${requiredHours})` : "Full Attendance";
                     completedDaysCount++;
                 } else {
                     status = "Incomplete";
                     remarks = `Missing: ${missing.join(", ")}`;
                 }
             }
- 
-            if (isFilterMatch) { 
-                let rowLog = document.getElementById("attendanceContent").insertRow();
-                rowLog.innerHTML = `<td><strong>${student.name}</strong></td><td>${date}</td>
-                    <td>${formatLog(logs ? logs.morning : null)}</td>
-                    <td>${formatLog(logs ? logs.break : null)}</td>
-                    <td>${formatLog(logs ? logs.lunch : null)}</td>`;
+
+            if (isFilterMatch) {  
+                if (!isFuture) {
+                    let rowLog = document.getElementById("attendanceContent").insertRow();
+                    rowLog.innerHTML = `<td><strong>${student.name}</strong></td><td>${date}</td>
+                        <td>${formatLog(logs ? logs.morning : null)}</td>
+                        <td>${formatLog(logs ? logs.break : null)}</td>
+                        <td>${formatLog(logs ? logs.lunch : null)}</td>`;
+                }
 
                 if (status === "Absent") {
                     const absentRow = document.getElementById("absentContent").insertRow();
-                    absentRow.innerHTML = `
-                        <td><strong>${student.name}</strong></td>
-                        <td>${date}</td>
+                    absentRow.innerHTML = `<td><strong>${student.name}</strong></td><td>${date}</td>
                         <td><span style="color:red">Absent</span></td>
-                        <td>
-                            <button onclick="rescheduleDay('${student.name}', '${date}')" class="btn-excel-small" style="background-color: #3498db;">
-                                <i class='bx bx-calendar-plus'></i> Reschedule
-                            </button>
-                        </td>`;
+                        <td><button onclick="rescheduleDay('${student.name}', '${date}')" class="btn-excel-small" style="background-color: #3498db;"><i class='bx bx-calendar-plus'></i> Reschedule</button></td>`;
                 } 
 
                 if (status === "Incomplete") {
                     const incRow = document.getElementById("incompleteContent").insertRow();
-                    incRow.innerHTML = `
-                        <td><strong>${student.name}</strong></td>
-                        <td>${date}</td>
+                    incRow.innerHTML = `<td><strong>${student.name}</strong></td><td>${date}</td>
                         <td><span style="color:#f39c12">${remarks}</span></td>
-                        <td>
-                            <div style="display:flex; gap:5px;">
-                                <button onclick="forceComplete('${student.name}', '${date}')" class="btn-excel-small" style="background-color: #27ae60;">
-                                    <i class='bx bx-check'></i> Mark Done
-                                </button>
-                                <button onclick="markAsAbsent('${student.name}', '${date}')" class="btn-excel-small" style="background-color: #e74c3c;">
-                                    <i class='bx bx-x'></i> Mark Absent
-                                </button>
-                            </div>
-                        </td>`;
+                        <td><div style="display:flex; gap:5px;">
+                            <button onclick="forceComplete('${student.name}', '${date}')" class="btn-excel-small" style="background-color: #27ae60;"><i class='bx bx-check'></i> Mark Done</button>
+                            <button onclick="markAsAbsent('${student.name}', '${date}')" class="btn-excel-small" style="background-color: #e74c3c;"><i class='bx bx-x'></i> Mark Absent</button>
+                        </div></td>`;
                 }
             }
         });
- 
+
         if (completedDaysCount === totalScheduled && totalScheduled > 0) {
             let rowComp = document.getElementById("completedContent").insertRow();
             rowComp.innerHTML = `<td><strong>${student.name}</strong></td><td>${student.section}</td><td>${student.reason}</td><td><span style="color:green; font-weight:bold;">100% Cleared</span></td>`;
+        }
+    });
+ 
+    tables.forEach(id => {
+        const tableBody = document.getElementById(id);
+        if (tableBody && tableBody.rows.length === 0) {
+            const colCount = tableBody.closest('table').querySelectorAll('thead th').length;
+            const emptyRow = tableBody.insertRow();
+            emptyRow.innerHTML = `<td colspan="${colCount}" style="text-align:center; color:#999; padding:20px;">No records found.</td>`;
         }
     });
 }
