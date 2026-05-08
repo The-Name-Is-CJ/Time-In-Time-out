@@ -190,3 +190,13 @@ function saveAttendance(student, dateStr, sessionKey, sessionData) {
         localStorage.setItem("students", JSON.stringify(students));
     }
 }
+function accessReports() {
+    const password = prompt("Please enter the Admin Password to access Reports:");
+    const masterPass = "PODComServe";  
+
+    if (password === masterPass) {
+        window.location.href = "reports.html";
+    } else if (password !== null) {
+        alert("Access denied.");
+    }
+}

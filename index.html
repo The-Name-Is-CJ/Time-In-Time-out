@@ -4,8 +4,6 @@
     <title>Add List</title>
     <link rel="stylesheet" href="addlist.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'> 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
 <body> 
 
@@ -24,7 +22,7 @@
             <i class='bx bx-time-five'></i> Track Time
         </a>
 
-        <a href="reports.html">
+        <a href="javascript:void(0)" onclick="accessReports()">
             <i class='bx bx-bar-chart-alt-2'></i> Reports
         </a>
 
@@ -36,120 +34,49 @@
         <div class="form-container">
             <h3>Add Student</h3>
 
-            <div class="calendar-wrapper">
-
-
-                <div class="calendar">
-                    <div class="calendar-header">
-                        <button onclick="prevMonth()">‹</button>
-                        <h4 id="monthYear"></h4>
-                        <button onclick="nextMonth()">›</button>
-                    </div>
-
-                    <div class="calendar-days">
-                        <div>Sun</div><div>Mon</div><div>Tue</div>
-                        <div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
-                    </div>
-
-                    <div id="calendarDates" class="calendar-dates"></div>
-                </div>
-
-                <div class="calendar-side">
-                    <button class="add-btn" onclick="openModal()">+ Add Event</button>
-
-                    <div id="eventDisplay" class="event-display">
-                        Click a marked date to see event
-                    </div>
-                </div>
-
-            </div>
- 
-            <div id="eventModal" class="modal">
-                <div class="modal-content">
-                    <h3>Add NO Classes Date</h3>
-
-                    <p id="selectedDatesText"></p>
-
-                    <input type="text" id="eventReason" placeholder="Enter reason">
-
-                    <div class="modal-buttons">
-                        <button onclick="confirmBlock()">Confirm</button>
-                        <button class="cancel-btn" onclick="closeModal()">Cancel</button>
-                    </div>
-                </div>
-            </div> 
-
-            <div id="editModal" class="modal" style="display:none;">
-                <div class="modal-content">
-                    <span class="close" onclick="closeEditModal()">&times;</span>
-                    <h3>Edit NO Classes Date</h3>
-                    <p id="editDateText" style="font-weight: bold; color: #d9534f;"></p>
-                    
-                    <label for="editReason">Reason/Event:</label>
-                    <textarea id="editReason" rows="3" style="width: 100%; margin-top: 10px;"></textarea>
-
-                    <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
-                        <button class="delete-btn-modal" onclick="deleteBlock()">
-                            <i class='bx bx-trash'></i> Unblock Date
-                        </button>
-                        <button onclick="updateBlock()">Save Changes</button> 
-                        <button class="cancel-btn" onclick="closeEditModal()">Close</button>
-                    </div>
-                </div>
-            </div>
- 
             <div class="form-grid">
                 <div class="left-col">
                     <label>Name: <span style="color:red;">*</span></label>
                     <input type="text" id="name" placeholder="Student Name">
 
-                    <label style="margin-top: 10px;">Section: <span style="color:red;">*</span></label>
+                    <label style="margin-top: 15px;">Section: <span style="color:red;">*</span></label>
                     <input type="text" id="section" placeholder="Section">
-                </div>
 
-                <div class="right-col">
-                    <label>Offense Type: <span style="color:red;">*</span></label>
-                    <div class="radio-group" style="margin-bottom: 15px;">
-                        <label><input type="radio" name="offenseType" value="Minor" checked> Minor Offense</label>
-                        <label><input type="radio" name="offenseType" value="Major"> Major Offense</label>
+                    <label style="margin-top: 15px;">Offense Type: <span style="color:red;">*</span></label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="offenseType" value="Minor" checked> Minor</label>
+                        <label><input type="radio" name="offenseType" value="Major"> Major</label>
                     </div>
 
-                    <label>Reason for Community Service (One per line):</label>
-                    <textarea id="serviceReason" placeholder="• Tardiness&#10;• Absence"></textarea>
-                </div>
-            </div>
-        
-    
-            <div class="date-row">
-                <div class="input-group">
-                    <label>Start Date: <span style="color:red;">*</span></label>
-                    <div class="date-input-wrapper" style="position: relative;"> 
-                        <i class='bx bx-calendar' style="position: absolute; margin: 13px; color: #4a4a4a; z-index: 1;"></i>
-                        <input type="text" id="startDate" placeholder="Select a date" readonly>
+                    <label style="margin-top: 15px;">Reason (One per line):</label>
+                    <textarea id="serviceReason" placeholder="• Tardiness"></textarea>
+
+                    <div class="save-btn-container">
+                        <button class="save-btn" onclick="addStudent()">Save Student</button>
                     </div>
                 </div>
-                <div class="input-group">
-                    <label>Number of Service Days:</label>
-                    <input type="number" id="numDays" min="1" placeholder="e.g. 5">
-                </div>
-            </div>
 
-            <div id="timeContainer" style="display:none;">
-                <label>Hours (for 1-day service)</label>
-                <div class="radio-group">
-                    <label><input type="radio" name="hours" value="1"> 1 hr</label>
-                    <label><input type="radio" name="hours" value="2"> 2 hrs</label>
-                    <label><input type="radio" name="hours" value="3"> 3 hrs</label>
-                    <label><input type="radio" name="hours" value="4"> 4 hrs</label>
-                    <label><input type="radio" name="hours" value="5"> 5 hrs</label>
-                    <label><input type="radio" name="hours" value="6"> 6 hrs</label>
-                    <label><input type="radio" name="hours" value="7"> 7 hrs</label>
-                    <label><input type="radio" name="hours" value="8"> 8 hrs</label>
-                </div>
-            </div>
+                <div class="calendar-wrapper">
+                    <div class="calendar">
+                        <div class="calendar-header">
+                            <button onclick="prevMonth()">‹</button>
+                            <h4 id="monthYear"></h4>
+                            <button onclick="nextMonth()">›</button>
+                        </div>
+                        <div class="calendar-days">
+                            <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                        </div>
+                        <div id="calendarDates" class="calendar-dates"></div>
+                    </div>
 
-            <div class="save-btn-container">
-                <button class="save-btn" onclick="addStudent()">Save Student</button>
+                    <div class="calendar-side">
+                        <button class="add-btn" onclick="clearSelection()">Clear Selected Dates</button>
+                        <div id="eventDisplay" class="event-display">
+                            Click dates on the calendar to assign service days.
+                        </div>
+                    </div>
+                </div>
+            
             </div>
         </div>
 
@@ -171,6 +98,72 @@
                 <tbody id="studentTable">
                 </tbody>
             </table>
+        </div>
+
+        <div id="hourModal" class="modal">
+            <div class="modal-content">
+                <h3><i class='bx bx-time'></i> Set Service Hours</h3>
+                <p>Please specify the number of hours for this single-day service:</p>
+                
+                <div class="modal-radio-group">
+                    <label><input type="radio" name="modalHours" value="1"> 1 Hour</label>
+                    <label><input type="radio" name="modalHours" value="2"> 2 Hours</label>
+                    <label><input type="radio" name="modalHours" value="3"> 3 Hours</label>
+                    <label><input type="radio" name="modalHours" value="4"> 4 Hours</label>
+                    <label><input type="radio" name="modalHours" value="5"> 5 Hours</label>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="confirm-btn" onclick="confirmHours()">Confirm Hours</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="editModal" class="modal">
+            <div class="modal-content" style="width: 80%; max-width: 1000px;">
+                <h3><i class='bx bx-edit'></i> Edit Student Record</h3>
+                <div class="form-grid" style="border: none; text-align: left;">
+                    <div class="left-col">
+                        <input type="hidden" id="editIndex">
+                        <label>Name: <span style="color:red;">*</span></label>
+                        <input type="text" id="editName">
+
+                        <label style="margin-top: 15px;">Section: <span style="color:red;">*</span></label>
+                        <input type="text" id="editSection">
+
+                        <label style="margin-top: 15px;">Offense Type: <span style="color:red;">*</span></label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="editOffenseType" value="Minor"> Minor</label>
+                            <label><input type="radio" name="editOffenseType" value="Major"> Major</label>
+                        </div>
+
+                        <label style="margin-top: 15px;">Reason:</label>
+                        <textarea id="editServiceReason" style="height: 100px; width: 100%; border-radius: 6px; border: 1px solid #ddd;"></textarea>
+                    </div>
+
+                    <div class="calendar-wrapper">
+                        <div class="calendar">
+                            <div class="calendar-header">
+                                <button onclick="changeEditMonth(-1)">‹</button>
+                                <h4 id="editMonthYear"></h4>
+                                <button onclick="changeEditMonth(1)">›</button>
+                            </div>
+                            <div class="calendar-days">
+                                <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                            </div>
+                            <div id="editCalendarDates" class="calendar-dates"></div>
+                        </div>
+                        <div class="calendar-side">
+                            <button class="add-btn" onclick="clearEditSelection()">Clear Dates</button>
+                            <div id="editEventDisplay" class="event-display"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-actions" style="margin-top: 20px; display: flex; gap: 10px;">
+                    <button class="confirm-btn" onclick="updateStudent()">Update Records</button>
+                    <button class="confirm-btn" style="background:#ccc; color:#333;" onclick="closeEditModal()">Cancel</button>
+                </div>
+            </div>
         </div>
 
     <script src="addlist.js"></script>

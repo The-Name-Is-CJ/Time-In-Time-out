@@ -282,3 +282,13 @@ function formatPrettyDate(dateStr) {
     const options = { month: 'short', day: 'numeric', year: 'numeric' };
     return new Date(dateStr).toLocaleDateString(undefined, options);
 }
+function accessReports() {
+    const password = prompt("Please enter the Admin Password to access Reports:");
+    const masterPass = "PODComServe";  
+
+    if (password === masterPass) {
+        window.location.href = "reports.html";
+    } else if (password !== null) {
+        alert("Access denied.");
+    }
+}

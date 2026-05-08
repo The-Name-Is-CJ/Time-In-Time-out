@@ -1,3 +1,24 @@
+let selectedDates = []; 
+let currentDate = new Date();
+let selectedHours = "";
+
+const ADMIN_PASSWORD = "PODComServe";
+
+window.onload = function () {
+    renderCalendar();
+    loadStudents();
+};
+ 
+function formatDisplayDate(dateStr) {
+    const [year, month, day] = dateStr.split('-');
+    const date = new Date(year, month - 1, day);
+    return date.toLocaleDateString('en-US', { 
+        month: 'long', 
+        day: '2-digit', 
+        year: 'numeric' 
+    });
+}
+
 function getHolidays(year) {
     const holidayList = [
         { date: `${year}-01-01`, name: "New Year's Day" },
@@ -15,12 +36,6 @@ function getHolidays(year) {
         { date: `${year}-12-31`, name: "Last Day of the Year" }
     ];
 
-    let aug31 = new Date(year, 7, 31);
-    let day = aug31.getDay();
-    let diff = (day >= 1) ? (day - 1) : 6;
-    aug31.setDate(31 - diff);
-    holidayList.push({ date: formatDate(aug31), name: "National Heroes Day" });
- 
     if (year === 2026) {
         holidayList.push(
             { date: "2026-04-02", name: "Maundy Thursday" },
@@ -28,44 +43,7 @@ function getHolidays(year) {
             { date: "2026-04-04", name: "Black Saturday" }
         );
     }
-
     return holidayList;
-}
-let blockedDates = JSON.parse(localStorage.getItem("blockedDates")) || [];
-let selectedDates = [];
-
-let currentDate = new Date();
-
-let rangeStart = null;
-let rangeEnd = null;
-let tempSelected = [];
-
-
-window.onload = function () {
-    renderCalendar();
-    loadStudents();
-    initDatePicker(); 
-};
-
-function initDatePicker() {
-    const year = new Date().getFullYear();
-    const holidayDates = getHolidays(year).map(h => h.date);
-    const manualBlocked = blockedDates.map(b => b.date);
-
-    flatpickr("#startDate", {
-        minDate: "today",
-        dateFormat: "Y-m-d",
-        locale: {
-            firstDayOfWeek: 0  
-        },
-        disable: [
-            function(date) { 
-                return (date.getDay() === 0 || date.getDay() === 6);
-            },
-            ...holidayDates,
-            ...manualBlocked
-        ]
-    });
 }
 
 function formatDate(date) {
@@ -99,49 +77,82 @@ function renderCalendar() {
     }
  
     for (let i = 1; i <= lastDate; i++) {
-        let date = new Date(year, month, i, 0, 0, 0, 0);
+        let date = new Date(year, month, i);
         let dateStr = formatDate(date);
         let div = document.createElement("div");
         div.innerText = i;
 
-        let day = date.getDay();
         let holidayObj = currentHolidays.find(h => h.date === dateStr);
-        let blockedObj = blockedDates.find(b => b.date === dateStr);
 
-        if (holidayObj || blockedObj) {
-            div.classList.add("blocked"); 
-            div.onclick = (e) => {
-                e.stopPropagation();
-                if (holidayObj) { 
-                    document.getElementById("eventDisplay").innerText = dateStr + " - " + holidayObj.name;
-                } else { 
-                    openEditModal(dateStr, blockedObj.reason);
-                }
-            };
-        } 
-        else if (day === 0 || day === 6) {
-            div.classList.add("weekend");
-            div.onclick = (e) => {
-                e.stopPropagation();
-                toggleDate(dateStr);
-            };
+        if (holidayObj) {
+            div.classList.add("blocked");
+            div.title = holidayObj.name;
+            div.onclick = () => alert("Holiday: " + holidayObj.name);
         } 
         else if (selectedDates.includes(dateStr)) {
             div.classList.add("selected");
-            div.onclick = (e) => {
-                e.stopPropagation();
-                toggleDate(dateStr);
-            };
+            div.onclick = () => toggleDate(dateStr);
         }  
         else {
-            div.onclick = (e) => {
-                e.stopPropagation();
-                toggleDate(dateStr);
-            };
+            div.onclick = () => toggleDate(dateStr);
         }
         container.appendChild(div);
     }
 }
+
+function toggleDate(dateStr) {
+    if (selectedDates.includes(dateStr)) {
+        selectedDates = selectedDates.filter(d => d !== dateStr);
+        selectedHours = "";  
+    } else {
+        selectedDates.push(dateStr);
+    }
+     
+    if (selectedDates.length !== 1) {
+        selectedHours = ""; 
+    }
+    updateDateDisplay();
+    renderCalendar();
+}
+
+function confirmHours() {
+    let hourRadio = document.querySelector('input[name="modalHours"]:checked');
+    if (hourRadio) {
+        selectedHours = hourRadio.value;
+        document.getElementById("hourModal").style.display = "none";
+        updateDateDisplay(); 
+        addStudent();
+    } else {
+        alert("Please select the number of hours.");
+    }
+}
+
+function updateDateDisplay() {
+    const displayElement = document.getElementById("eventDisplay");
+    
+    if (selectedDates.length > 0) { 
+        let formattedDates = [...selectedDates]
+            .sort()
+            .map(date => `• ${formatDisplayDate(date)}`);  
+        
+        let displayText = formattedDates.join('\n');
+         
+        if (selectedDates.length === 1 && selectedHours) {
+            displayText += ` (${selectedHours} hrs)`;
+        }
+        
+        displayElement.innerText = displayText;
+        displayElement.style.whiteSpace = "pre-line";
+    } else {
+        displayElement.innerText = "Click dates on the calendar to assign service days.";
+    }
+}
+
+function clearSelection() {
+    selectedDates = [];
+    updateDateDisplay();
+    renderCalendar();
+}  
 
 function prevMonth() {
     currentDate.setMonth(currentDate.getMonth() - 1);
@@ -153,327 +164,274 @@ function nextMonth() {
     renderCalendar();
 }
 
-function formatPrettyDate(dateStr) {
-    const options = { month: 'short', day: 'numeric' };
-    return new Date(dateStr).toLocaleDateString(undefined, options);
-}
-
 function addStudent() {
     let name = document.getElementById("name").value;
     let section = document.getElementById("section").value;
-    let startInput = document.getElementById("startDate").value;
-    let daysInput = parseInt(document.getElementById("numDays").value);
-     
     let offenseType = document.querySelector('input[name="offenseType"]:checked').value;
-     
     let reasonRaw = document.getElementById("serviceReason").value;
+    
+    if (!name || !section || selectedDates.length === 0) {
+        alert("Please fill in Name, Section, and select at least one date!");
+        return;
+    }
+
+    if (selectedDates.length === 1 && !selectedHours) {
+        document.getElementById("hourModal").style.display = "flex";
+        return; 
+    }
+
     let reasonLines = reasonRaw.split('\n').filter(line => line.trim() !== "");
     let bulletedReason = reasonLines.map(line => `• ${line.trim()}`).join('\n');
 
-    if (!name || !section || !startInput || isNaN(daysInput)) {
-        alert("Please fill all required fields!");
-        return;
-    } 
-
-    let current = new Date(startInput);
-    let currentHolidays = getHolidays(current.getFullYear()); 
-    let finalSchedule = [];
-    let added = 0;
-    let safetyCounter = 0;
-
-    while (added < daysInput && safetyCounter < 365) {
-        let dateStr = formatDate(current);
-        let day = current.getDay();
-        let isHoliday = currentHolidays.some(h => h.date === dateStr);
-        let isWeekend = (day === 0 || day === 6);
-        let isBlockedByEvent = blockedDates.some(b => b.date === dateStr);
-
-        if (!isHoliday && !isWeekend && !isBlockedByEvent) {
-            finalSchedule.push(dateStr);
-            added++;
-        }
-        current.setDate(current.getDate() + 1);
-        safetyCounter++;
-    }
-
-    let hourVal = "";
-    if (daysInput === 1) {
-        let checkedRadio = document.querySelector('input[name="hours"]:checked');
-        if (checkedRadio) hourVal = checkedRadio.value;
-    }
-  
     let student = {
         name: name,
         section: section,
         offenseType: offenseType,  
         reason: bulletedReason,  
-        startDate: startInput, 
-        requestedDays: daysInput,
-        dates: finalSchedule,
-        hours: hourVal
+        dates: [...selectedDates].sort(),
+        hours: selectedDates.length === 1 ? selectedHours : "" 
     };
 
     let students = JSON.parse(localStorage.getItem("students")) || [];
     students.push(student);
     localStorage.setItem("students", JSON.stringify(students));
  
-    document.getElementById("name").value = "";
-    document.getElementById("section").value = "";
-    document.getElementById("serviceReason").value = "";
-    document.getElementById("startDate").value = "";
-    document.getElementById("numDays").value = "";
-    
+    resetForm();
     loadStudents();
     renderCalendar();
 }
- 
-document.addEventListener("click", function (e) {
-    const wrapper = document.querySelector(".calendar-wrapper");
-    const modal = document.getElementById("eventModal");
-    
-    if (wrapper && !wrapper.contains(e.target) && !modal.contains(e.target)) {
-        selectedDates = [];
-        renderCalendar();
-    }
-});
+
+function resetForm() {
+    document.getElementById("name").value = "";
+    document.getElementById("section").value = "";
+    document.getElementById("serviceReason").value = "";
+    selectedDates = [];
+    selectedHours = ""; 
+    document.getElementById("eventDisplay").innerText = "Click dates on the calendar to assign service days.";
+    document.querySelectorAll('input[name="modalHours"]').forEach(r => r.checked = false);
+} 
+
+let editSelectedDates = [];
+let editCurrentDate = new Date();
+let editIndex = null;
 
 function loadStudents() {
     let table = document.getElementById("studentTable");
+    if (!table) return; 
     table.innerHTML = "";
     let students = JSON.parse(localStorage.getItem("students")) || [];
 
     students.forEach((s, index) => {
         let row = table.insertRow();
-
         row.insertCell(0).innerText = s.name;
         row.insertCell(1).innerText = s.section;
  
         let reasonCell = row.insertCell(2);
         let tagClass = s.offenseType === 'Major' ? 'tag-major' : 'tag-minor';
-        reasonCell.innerHTML = `
-            <span class="offense-tag ${tagClass}">${s.offenseType}</span><br>
-            ${s.reason || "-"}
-        `;
+        reasonCell.innerHTML = `<span class="offense-tag ${tagClass}">${s.offenseType}</span><br>${s.reason || "-"}`;
  
         let dateCell = row.insertCell(3);
-        let dateDisplay = "";
-        if (s.dates && s.dates.length > 0) {
-            if (s.dates.length === 1) {
-                dateDisplay = formatPrettyDate(s.dates[0]);
-                if (s.hours) dateDisplay += ` (${s.hours} hr/s)`;
-            } else {
-                dateDisplay = `${formatPrettyDate(s.dates[0])} - ${formatPrettyDate(s.dates[s.dates.length-1])}`;
-            }
-        }
-        dateCell.innerText = dateDisplay;
+        let sortedDates = [...s.dates].sort();
+        let display = sortedDates.length > 2 
+            ? `${formatDisplayDate(sortedDates[0])} ... ${formatDisplayDate(sortedDates[sortedDates.length-1])} (${sortedDates.length} days)`
+            : sortedDates.map(formatDisplayDate).join(", ");
+        if (s.hours && sortedDates.length === 1) display += ` (${s.hours} hrs)`;
+        dateCell.innerText = display;
   
         let actionCell = row.insertCell(4);
- 
+         
+        let editBtn = document.createElement("button");
+        editBtn.innerHTML = "<i class='bx bx-edit'></i>";
+        editBtn.className = "edit-btn";
+        editBtn.onclick = () => {
+            if (prompt("Enter Admin Password to Edit:") === ADMIN_PASSWORD) {
+                openEditModal(index);
+            } else {
+                alert("Access denied.");
+            }
+        };
+         
         let delBtn = document.createElement("button");
         delBtn.innerHTML = "<i class='bx bx-trash'></i>";
         delBtn.className = "delete-btn";
-        delBtn.onclick = () => deleteStudent(index);
+        delBtn.onclick = () => {
+            if (prompt("Enter Admin Password to Delete:") === ADMIN_PASSWORD) {
+                if(confirm("Are you sure you want to delete this record?")) {
+                    students.splice(index, 1);
+                    localStorage.setItem("students", JSON.stringify(students));
+                    loadStudents();
+                }
+            } else {
+                alert("Access denied.");
+            }
+        };
+        
+        actionCell.appendChild(editBtn);
         actionCell.appendChild(delBtn);
     });
 }
-
-function toggleDate(dateStr) {
-    if (selectedDates.includes(dateStr)) {
-        selectedDates = selectedDates.filter(d => d !== dateStr);
-    } else {
-        selectedDates.push(dateStr);
-    }
-    renderCalendar();
-}
-
-document.getElementById("numDays").addEventListener("input", function () {
-    let days = parseInt(this.value);
-
-    if (days === 1) {
-        document.getElementById("timeContainer").style.display = "block";
-    } else {
-        document.getElementById("timeContainer").style.display = "none";
-    }
-});
-
-function deleteStudent(index) {
-    let students = JSON.parse(localStorage.getItem("students")) || [];
-    let studentName = students[index].name;
  
-    if (confirm(`Are you sure you want to delete the records for ${studentName}?`)) {
-        let removedDates = students[index].dates;
- 
-        blockedDates = blockedDates.filter(b => !removedDates.includes(b.date));
-
-        students.splice(index, 1);
-
-        localStorage.setItem("students", JSON.stringify(students));
-        localStorage.setItem("blockedDates", JSON.stringify(blockedDates));
-
-        loadStudents();
-        renderCalendar();
-    }
-}
-
-function getDateRange(start, end) {
-    let result = [];
-    let current = new Date(start);
-    let last = new Date(end);
-
-    if (current > last) {
-        [current, last] = [last, current];
-    }
-
-    while (current <= last) {
-        let d = current.toISOString().split("T")[0];
-        let day = current.getDay();
-
-        if (
-            day !== 0 &&
-            day !== 6 &&
-            !holidays.includes(d) &&
-            !blockedDates.some(b => b.date === d)
-        ) {
-            result.push(d);
-        }
-
-        current.setDate(current.getDate() + 1);
-    }
-
-    return result;
-}
-
-function openModal() {
-    if (selectedDates.length === 0) {
-        alert("Select date(s) first!");
-        return;
-    }
-
-    document.getElementById("eventModal").style.display = "block";
-    document.getElementById("selectedDatesText").innerText =
-        "Dates: " + selectedDates.join(", ");
-}
-
-function closeModal() {
-    document.getElementById("eventModal").style.display = "none";
-    document.getElementById("eventReason").value = "";
-}
-
-function confirmBlock() {
-    let reason = document.getElementById("eventReason").value;
-
-    if (!reason) {
-        alert("Enter a reason!");
-        return;
-    }
-
-    selectedDates.forEach(d => {
-        blockedDates.push({
-            date: d,
-            reason: reason
-        });
-    });
-
-    localStorage.setItem("blockedDates", JSON.stringify(blockedDates));
-    refreshAllSchedules();
-    selectedDates = [];
-
-    closeModal();
-    renderCalendar();
-} 
-
-let currentEditingDate = null; 
-
-    function openEditModal(dateStr, currentReason) {
-        currentEditingDate = dateStr;
-        document.getElementById("editModal").style.display = "block";
-        document.getElementById("editDateText").innerText = "Date: " + dateStr;
-        document.getElementById("editReason").value = currentReason;
-    }
-
-    function closeEditModal() {
-        document.getElementById("editModal").style.display = "none";
-        currentEditingDate = null;
-    }
- 
-    function updateBlock() {
-        let newReason = document.getElementById("editReason").value;
-        if (!newReason) {
-            alert("Reason cannot be empty!");
-            return;
-        }
- 
-        blockedDates = blockedDates.map(b => {
-            if (b.date === currentEditingDate) {
-                return { ...b, reason: newReason };
-            }
-            return b;
-        });
-
-        localStorage.setItem("blockedDates", JSON.stringify(blockedDates));
-        closeEditModal();
-        renderCalendar();
-    }
- 
-    function deleteBlock() {
-        if (confirm(`Do you want to unblock ${currentEditingDate}?`)) {
-            blockedDates = blockedDates.filter(b => b.date !== currentEditingDate);
-            
-            localStorage.setItem("blockedDates", JSON.stringify(blockedDates));
-            refreshAllSchedules();
-            closeEditModal();
-            renderCalendar();
-        }
-    }
-function refreshAllSchedules() {
-    let students = JSON.parse(localStorage.getItem("students")) || [];
-    if (students.length === 0) return;
-
-    const updatedStudents = students.map(student => { 
-        let daysNeeded = student.requestedDays || student.dates.length;
-        let current = new Date(student.startDate);
-        let currentHolidays = getHolidays(current.getFullYear()); 
-        
-        let newSchedule = [];
-        let added = 0;
-        let safetyCounter = 0;
-
-        while (added < daysNeeded && safetyCounter < 365) {
-            let dateStr = formatDate(current);
-            let day = current.getDay();
-            let isHoliday = currentHolidays.some(h => h.date === dateStr);
-            let isWeekend = (day === 0 || day === 6);
-            let isBlockedByEvent = blockedDates.some(b => b.date === dateStr);
-
-            if (!isHoliday && !isWeekend && !isBlockedByEvent) {
-                newSchedule.push(dateStr);
-                added++;
-            }
-            current.setDate(current.getDate() + 1);
-            safetyCounter++;
-        }
-
-        return { ...student, dates: newSchedule };
-    });
-
-    localStorage.setItem("students", JSON.stringify(updatedStudents));
-    loadStudents();  
-    console.log("All student schedules have been updated based on the new calendar constraints.");
-}
-
 function masterReset() { 
-    if (confirm("WARNING: This will permanently delete ALL students, attendance logs, and blocked calendar dates. This cannot be undone.\n\nDo you want to proceed?")) {
-         
-        let password = prompt("Please enter the Master Password to authorize deletion:");
-
-        if (password === "dctcommunityservicepass") { 
+    if (confirm("WARNING: Clear all data?")) {
+        if (prompt("Enter Master Password:") === ADMIN_PASSWORD) { 
             localStorage.clear();
- 
-            alert("System Reset Successful. All data has been cleared.");
- 
             location.reload();
-        } else if (password !== null) { 
-            alert("Incorrect password. Action cancelled.");
+        } else {
+            alert("Access denied.");
         }
     }
+}
+
+function accessReports() {
+    const password = prompt("Please enter the Admin Password to access Reports:");
+    if (password === ADMIN_PASSWORD) {
+        window.location.href = "reports.html";
+    } else if (password !== null) {
+        alert("");
+    }
+}
+  
+function openEditModal(index) {
+    let students = JSON.parse(localStorage.getItem("students")) || [];
+    let s = students[index];
+    editIndex = index;
+ 
+    document.getElementById("editName").value = s.name;
+    document.getElementById("editSection").value = s.section;
+    document.querySelector(`input[name="editOffenseType"][value="${s.offenseType}"]`).checked = true; 
+    document.getElementById("editServiceReason").value = s.reason.replace(/• /g, "");
+     
+    editSelectedDates = [...s.dates];
+    renderEditCalendar();
+    updateEditDisplay();
+    
+    document.getElementById("editModal").style.display = "flex";
+}
+
+function closeEditModal() {
+    document.getElementById("editModal").style.display = "none";
+}
+
+function renderEditCalendar() {
+    const container = document.getElementById("editCalendarDates");
+    const monthYear = document.getElementById("editMonthYear");
+    container.innerHTML = "";
+
+    let year = editCurrentDate.getFullYear();
+    let month = editCurrentDate.getMonth();
+    const currentHolidays = getHolidays(year);
+
+    monthYear.innerText = editCurrentDate.toLocaleString("default", { month: "long", year: "numeric" });
+
+    let firstDay = new Date(year, month, 1).getDay();
+    let lastDate = new Date(year, month + 1, 0).getDate();
+ 
+    for (let i = 0; i < firstDay; i++) container.innerHTML += "<div></div>";
+ 
+    for (let i = 1; i <= lastDate; i++) {
+        let date = new Date(year, month, i);
+        let dateStr = formatDate(date);
+        let div = document.createElement("div");
+        div.innerText = i;
+
+        if (currentHolidays.find(h => h.date === dateStr)) {
+            div.classList.add("blocked");
+        } else if (editSelectedDates.includes(dateStr)) {
+            div.classList.add("selected");
+            div.onclick = () => toggleEditDate(dateStr);
+        } else {
+            div.onclick = () => toggleEditDate(dateStr);
+        }
+        container.appendChild(div);
+    }
+}
+
+function toggleEditDate(dateStr) {
+    if (editSelectedDates.includes(dateStr)) {
+        editSelectedDates = editSelectedDates.filter(d => d !== dateStr);
+    } else {
+        editSelectedDates.push(dateStr);
+    }
+    updateEditDisplay();
+    renderEditCalendar();
+}
+
+function updateEditDisplay() {
+    const displayElement = document.getElementById("editEventDisplay");
+    if (editSelectedDates.length > 0) {
+        displayElement.innerText = editSelectedDates.sort().map(d => `• ${formatDisplayDate(d)}`).join('\n');
+    } else {
+        displayElement.innerText = "No dates selected.";
+    }
+}
+
+function changeEditMonth(step) {
+    editCurrentDate.setMonth(editCurrentDate.getMonth() + step);
+    renderEditCalendar();
+}
+
+function clearEditSelection() {
+    editSelectedDates = [];
+    updateEditDisplay();
+    renderEditCalendar();
+}
+
+function updateStudent() {
+    let name = document.getElementById("editName").value;
+    let section = document.getElementById("editSection").value;
+    
+    if (!name || !section || editSelectedDates.length === 0) {
+        alert("Please complete all required fields.");
+        return;
+    }
+ 
+    if (editSelectedDates.length === 1) { 
+        document.getElementById("editModal").style.display = "none";
+         
+        document.querySelectorAll('input[name="modalHours"]').forEach(r => r.checked = false);
+         
+        const confirmBtn = document.querySelector("#hourModal .confirm-btn");
+        confirmBtn.setAttribute("onclick", "confirmEditHours()");
+        
+        document.getElementById("hourModal").style.display = "flex";
+        return; 
+    } 
+    saveEditData(""); 
+}
+
+function confirmEditHours() {
+    let hourRadio = document.querySelector('input[name="modalHours"]:checked');
+    if (hourRadio) {
+        let selectedHrs = hourRadio.value;
+        document.getElementById("hourModal").style.display = "none";
+         
+        document.querySelector("#hourModal .confirm-btn").setAttribute("onclick", "confirmHours()");
+        
+        saveEditData(selectedHrs);
+    } else {
+        alert("Please select the number of hours.");
+    }
+}
+function saveEditData(hoursValue) {
+    let students = JSON.parse(localStorage.getItem("students")) || [];
+    let name = document.getElementById("editName").value;
+    let section = document.getElementById("editSection").value;
+    let offense = document.querySelector('input[name="editOffenseType"]:checked').value;
+    let reasonRaw = document.getElementById("editServiceReason").value;
+
+    let reasonLines = reasonRaw.split('\n').filter(line => line.trim() !== "");
+    let bulletedReason = reasonLines.map(line => `• ${line.trim()}`).join('\n');
+
+    students[editIndex] = {
+        name: name,
+        section: section,
+        offenseType: offense,
+        reason: bulletedReason,
+        dates: [...editSelectedDates].sort(),
+        hours: editSelectedDates.length === 1 ? hoursValue : ""
+    };
+
+    localStorage.setItem("students", JSON.stringify(students));
+    closeEditModal();
+    loadStudents();
 }
