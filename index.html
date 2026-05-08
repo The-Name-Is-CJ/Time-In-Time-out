@@ -80,10 +80,6 @@
             </div>
         </div>
 
-        <button onclick="masterReset()" class="master-reset-btn">
-            <i class='bx bx-trash'></i> Reset All System Data
-        </button>
-
         <div class="list-container">
             <h3>Student List</h3>
             <table>
@@ -100,6 +96,22 @@
             </table>
         </div>
 
+        <div style="margin-top: 20px; display: flex; gap: 10px;">
+            <button onclick="exportData()" class="master-reset-btn">
+                <i class='bx bx-download'></i> Export Data (Backup)
+            </button>
+
+            <button onclick="document.getElementById('importFile').click()" class="master-reset-btn">
+                <i class='bx bx-upload'></i> Import Data
+            </button>
+            <input type="file" id="importFile" style="display: none;" accept=".json" onchange="importData(event)">
+
+            <button onclick="masterReset()" class="master-reset-btn">
+                <i class='bx bx-trash'></i> Reset All System Data
+            </button>
+        
+        </div>
+
         <div id="hourModal" class="modal">
             <div class="modal-content">
                 <h3><i class='bx bx-time'></i> Set Service Hours</h3>
@@ -111,6 +123,9 @@
                     <label><input type="radio" name="modalHours" value="3"> 3 Hours</label>
                     <label><input type="radio" name="modalHours" value="4"> 4 Hours</label>
                     <label><input type="radio" name="modalHours" value="5"> 5 Hours</label>
+                    <label><input type="radio" name="modalHours" value="6"> 6 Hours</label>
+                    <label><input type="radio" name="modalHours" value="7"> 7 Hours</label>
+                    <label><input type="radio" name="modalHours" value="8"> 8 Hours</label>
                 </div>
 
                 <div class="modal-actions">

@@ -199,7 +199,7 @@ body {
 }
 
 .calendar {
-    width: 100%; /* No longer a fixed 350px */
+    width: 100%; 
     max-width: 100%;
     box-sizing: border-box;
     background: #fff;
@@ -215,6 +215,7 @@ body {
     align-items: center;
     margin-bottom: 15px;
 }
+
 .calendar-header button {
     background: #b2adad;
     border: none;
@@ -514,8 +515,7 @@ span.flatpickr-weekday {
 .master-reset-btn:active {
     transform: scale(0.98);
 }
-
-/* Modal Styles */
+ 
 .modal {
     display: none; 
     position: fixed; 
@@ -545,14 +545,14 @@ span.flatpickr-weekday {
     to { transform: translateY(0); opacity: 1; }
 }
 
-.modal-content h3 {
-    margin-top: 0;
-    color: #4a4a4a;
+.modal-content {
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .modal-radio-group {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr 1fr;  
     gap: 10px;
     margin: 20px 0;
     text-align: left;
@@ -621,8 +621,7 @@ span.flatpickr-weekday {
 .delete-btn:hover {
     background: #ff4d6d;
 }
-
-/* Ensure the modal is scrollable on small screens */
+ 
 #editModal .modal-content {
     max-height: 90vh;
     overflow-y: auto;

@@ -435,3 +435,55 @@ function saveEditData(hoursValue) {
     closeEditModal();
     loadStudents();
 }
+ 
+function exportData() {
+    const data = localStorage.getItem("students");
+    if (!data || data === "[]") {
+        alert("No data found to export.");
+        return;
+    }
+
+    const blob = new Blob([data], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    
+    link.href = url;
+    link.download = `community_service_backup_${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+} 
+
+function importData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Optional: Password protection for importing
+    if (prompt("Enter Admin Password to Import Data:") !== ADMIN_PASSWORD) {
+        alert("Incorrect password. Access denied.");
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const importedData = JSON.parse(e.target.result);
+            
+            if (Array.isArray(importedData)) { 
+                let currentStudents = JSON.parse(localStorage.getItem("students")) || [];
+                let combinedData = currentStudents.concat(importedData);
+
+                localStorage.setItem("students", JSON.stringify(combinedData));
+                
+                loadStudents(); 
+                alert(`Success! Added ${importedData.length} records to your existing list.`);
+            } else {
+                alert("Invalid file format. Please upload a valid backup file.");
+            }
+        } catch (err) {
+            alert("Error reading file. Make sure it's a valid JSON file.");
+        }
+    };
+    reader.readAsText(file);
+     
+    event.target.value = '';
+}
